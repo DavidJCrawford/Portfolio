@@ -12,7 +12,7 @@ import Gallery from '../components/Gallery.astro';
         <p class="eyebrow">David J Crawford</p>
         <h1 class="statement">
           Product is a craft practised at the intersection of<br />
-          <span class="lens-line"><em>viability</em> // <em>desirability</em> // <em>feasibility</em>.</span>
+          <span class="lens-line"><span class="lens-item"><em>viability</em> //</span> <span class="lens-item"><em>desirability</em> //</span> <span class="lens-item"><em>feasibility</em>.</span></span>
         </h1>
         <p class="sub">
           Writing on how product is crafted through transdisciplinary design in the
@@ -82,8 +82,10 @@ import Gallery from '../components/Gallery.astro';
   }
   /* keep "viability // desirability // feasibility" on one line (wrap only on mobile) */
   .statement .lens-line { white-space: nowrap; }
+  /* Mobile: stack each lens on its own line ("viability //" / "desirability //" / "feasibility.") */
   @media (max-width: 640px) {
     .statement .lens-line { white-space: normal; }
+    .statement .lens-item { display: block; }
   }
   .statement em { font-style: normal; color: var(--accent); }
   .sub {
