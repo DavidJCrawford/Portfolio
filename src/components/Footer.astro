@@ -1,0 +1,85 @@
+---
+// Mirrors the header bar (DESIGN.md §5): a black block closing the page, with a
+// quiet colophon naming the stack — the craft argument, stated softly.
+import { withBase } from '../lib/url';
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="foot-inner shell">
+    <div class="col">
+      <p class="wordmark">David J Crawford</p>
+      <p class="tagline">On crafting product that keeps people safe and helps them thrive in a world of change.</p>
+    </div>
+    <nav class="col links" aria-label="Footer">
+      <a class="unstyled" href={withBase('#exhibition')}>Exhibition</a>
+      <a class="unstyled" href={withBase('#about')}>About</a>
+      <a class="unstyled" href="mailto:davidjcrawforddesign@gmail.com">Email</a>
+    </nav>
+    <p class="colophon">
+      <span>© {year}</span>
+      <span>Built with Astro &amp; MDX · self-hosted type · static &amp; owned</span>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    background: var(--black);
+    color: var(--on-black);
+    margin-top: 0; /* flush against the last block — no gap above the footer */
+  }
+  .foot-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-5) var(--space-6);
+    padding-block: var(--space-6);
+    align-items: start;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+  .tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--on-black-soft);
+    max-width: 36ch;
+    margin-top: var(--space-2);
+    line-height: 1.4;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .links a {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--on-black-soft);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+  }
+  .links a:hover { color: var(--on-black); }
+  .colophon {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(251, 250, 247, 0.14);
+    padding-top: var(--space-3);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.06em;
+    color: var(--on-black-soft);
+  }
+  @media (max-width: 40rem) {
+    .foot-inner { grid-template-columns: 1fr; }
+  }
+</style>

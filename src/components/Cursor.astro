@@ -1,0 +1,125 @@
+---
+// The site's one interactive moment: a liquid "comet" cursor follower.
+// Black + elongated while chasing the pointer; morphs into an #FF4B33 blob that
+// subtly undulates once it catches up. Progressive enhancement only (fine pointer +
+// motion allowed); it sits *under* the native cursor and never replaces it.
+const N = 7; // chain length — lead is biggest, tail tapers (the comet)
+---
+
+<div class="cursor" hidden aria-hidden="true">
+  <svg class="cursor__svg" width="100%" height="100%">
+    <defs>
+      <filter id="cursor-goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b" />
+        <feColorMatrix in="b" type="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -8" />
+      </filter>
+    </defs>
+    <g class="cursor__blobs" filter="url(#cursor-goo)" fill="#0b0b0a">
+      {Array.from({ length: N }).map((_, i) => (
+        <circle r={Math.max(3, 10 - i)} cx="-100" cy="-100" />
+      ))}
+    </g>
+  </svg>
+</div>
+
+<style>
+  .cursor {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  .cursor__svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+  /* No follower for touch / coarse pointers or reduced-motion users. */
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .cursor { display: none !important; }
+  }
+</style>
+
+<script>
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root = document.querySelector('.cursor');
+
+  if (root && fine && !reduce) {
+    root.hidden = false;
+    const circles = Array.from(root.querySelectorAll('circle'));
+    const g = root.querySelector('.cursor__blobs');
+    const N = circles.length;
+    const BLACK = [11, 11, 10];     // --black, while chasing over light areas
+    const WHITE = [251, 250, 247];  // while chasing over the black header bar
+    const ACCENT = [255, 75, 51];   // #FF4B33, once caught up (still ~500ms)
+    const lerp = (a, b, n) => a + (b - a) * n;
+
+    // The header bar (sticky, top) and footer (bottom of the page) are both black —
+    // flip the comet to white while it's over either. Re-measure on scroll/resize
+    // since the footer's on-screen position moves as you scroll.
+    const bar = document.querySelector('.bar');
+    const foot = document.querySelector('.foot');
+    let barBottom = 0, footTop = Infinity, footBottom = -Infinity;
+    const measure = () => {
+      if (bar) barBottom = bar.getBoundingClientRect().bottom;
+      if (foot) { const r = foot.getBoundingClientRect(); footTop = r.top; footBottom = r.bottom; }
+    };
+    measure();
+    addEventListener('resize', measure, { passive: true });
+    addEventListener('scroll', measure, { passive: true });
+
+    let mx = innerWidth / 2, my = innerHeight / 2;
+    const pts = circles.map(() => ({ x: mx, y: my }));
+    let t = 0, running = true;
+    let lastMove = performance.now(); // when the pointer last moved
+    let caught = 0;                   // eased: 0 = black comet, 1 = #FF4B33 blob
+
+    const onMove = (e) => { if (e.pointerType === 'touch') return; mx = e.clientX; my = e.clientY; lastMove = performance.now(); };
+    addEventListener('pointermove', onMove, { passive: true });
+    addEventListener('pointerdown', onMove, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running) requestAnimationFrame(frame);
+    });
+
+    function frame() {
+      if (!running) return;
+      t++;
+
+      // Lead chases the pointer; each link chases the one ahead → a lagging comet.
+      // Low easing so it drifts in slowly and takes its time to catch up.
+      pts[0].x = lerp(pts[0].x, mx, 0.08);
+      pts[0].y = lerp(pts[0].y, my, 0.08);
+      for (let i = 1; i < N; i++) {
+        pts[i].x = lerp(pts[i].x, pts[i - 1].x, 0.18);
+        pts[i].y = lerp(pts[i].y, pts[i - 1].y, 0.18);
+      }
+
+      // Turn #FF4B33 only after the pointer has been still ~500ms; otherwise the chasing
+      // colour is black — or WHITE while the blob is over the black header bar.
+      const target = performance.now() - lastMove >= 500 ? 1 : 0;
+      caught = lerp(caught, target, target ? 0.1 : 0.25);
+      const onDark =
+        (barBottom && pts[0].y <= barBottom) ||
+        (pts[0].y >= footTop && pts[0].y <= footBottom);
+      const base = onDark ? WHITE : BLACK;
+      const r = Math.round(lerp(base[0], ACCENT[0], caught));
+      const gc = Math.round(lerp(base[1], ACCENT[1], caught));
+      const b = Math.round(lerp(base[2], ACCENT[2], caught));
+      g.setAttribute('fill', `rgb(${r},${gc},${b})`);
+
+      for (let i = 0; i < N; i++) {
+        let x = pts[i].x, y = pts[i].y;
+        // subtle idle undulation, only once caught up
+        if (caught > 0.01) {
+          const ph = i * 1.6;
+          x += Math.sin(t * 0.06 + ph) * 2.5 * caught;
+          y += Math.cos(t * 0.05 + ph) * 2.5 * caught;
+        }
+        circles[i].setAttribute('cx', x.toFixed(1));
+        circles[i].setAttribute('cy', y.toFixed(1));
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+</script>

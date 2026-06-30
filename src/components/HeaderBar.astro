@@ -1,0 +1,168 @@
+---
+// The blocky black header bar (DESIGN.md §5) — reads as equipment against the paper.
+import { withBase } from '../lib/url';
+const { pathname } = Astro.url;
+const nav = [
+  { label: 'Writing', href: withBase('#exhibition') },
+  { label: 'Projects', href: withBase('#exhibition') },
+  { label: 'About', href: withBase('#about') },
+];
+const isActive = (href: string) => pathname === href;
+---
+
+<header class="bar">
+  <div class="bar-inner shell">
+    <a class="wordmark unstyled" href={withBase()} data-text="DJC" aria-label="David J Crawford — home">DJC</a>
+    <nav class="nav" aria-label="Primary">
+      {nav.map((item) => (
+        <a class="unstyled nav-link" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .bar {
+    background: var(--black);
+    color: var(--on-black);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .bar-inner {
+    height: var(--bar-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .wordmark {
+    /* serif italic monogram — a near-twin of the "D" favicon (DESIGN.md §5) */
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: 0.005em;
+    color: var(--on-black);
+    white-space: nowrap;
+  }
+  /* Glitch ghosts: light-grey + accent layers BEHIND the crisp white text. JS drives
+     the --ax/--ay/--aclip (grey) and --bx/--by/--bclip (accent) custom properties for
+     truly erratic motion while the mouse is over the header (see <script> below). */
+  .wordmark::before,
+  .wordmark::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    z-index: -1; /* behind the in-flow white text */
+    pointer-events: none;
+    opacity: 0;
+    filter: blur(0.4px); /* slight softness; the jolt comes from the offsets */
+    transition: opacity 110ms var(--ease);
+    will-change: transform, clip-path;
+  }
+  .wordmark::before {
+    color: #cbc8c0; /* light grey */
+    transform: translate(var(--ax, 0px), var(--ay, 0px));
+    clip-path: var(--aclip, inset(0 0 0 0));
+  }
+  .wordmark::after {
+    color: var(--accent); /* #FF4B33 */
+    transform: translate(var(--bx, 0px), var(--by, 0px));
+    clip-path: var(--bclip, inset(0 0 0 0));
+  }
+  /* Ghosts only show while the mouse is over the header bar. */
+  .bar:hover .wordmark::before,
+  .bar:hover .wordmark::after { opacity: 0.92; }
+  /* Reduced motion: a faint static split, no jitter (the JS jitter is skipped too). */
+  @media (prefers-reduced-motion: reduce) {
+    .bar:hover .wordmark::before { opacity: 0.55; --ax: -1px; }
+    .bar:hover .wordmark::after { opacity: 0.55; --bx: 1px; }
+  }
+  .nav {
+    display: flex;
+    gap: clamp(var(--space-3), 2vw, var(--space-5));
+  }
+  .nav-link {
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: var(--fs-label);
+    color: var(--on-black-soft);
+    padding-block: var(--space-1);
+    border-bottom: 1px solid transparent;
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .nav-link:hover,
+  .nav-link[aria-current='page'] {
+    color: var(--on-black);
+    border-bottom-color: var(--accent);
+  }
+  @media (max-width: 30rem) {
+    .nav { gap: var(--space-3); }
+    .nav-link:nth-child(2) { display: none; } /* collapse one label on tiny screens */
+  }
+</style>
+
+<script>
+  // Truly-erratic glitch jitter for the "DJC" ghost layers, only while the pointer
+  // is over the header. JS can't style pseudo-elements directly, so it sets CSS
+  // custom properties on the wordmark that ::before/::after read.
+  const bar = document.querySelector('.bar');
+  const mark = document.querySelector('.wordmark');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (bar && mark && !reduce) {
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    // a random horizontal slice — or, often, the whole letterform
+    const band = () => {
+      if (Math.random() < 0.4) return 'inset(0 0 0 0)';
+      const top = Math.round(rnd(0, 62));
+      const bot = Math.round(rnd(0, 84 - top));
+      return `inset(${top}% 0 ${bot}% 0)`;
+    };
+    const set = (ax, ay, ac, bx, by, bc) => {
+      const s = mark.style;
+      s.setProperty('--ax', ax + 'px'); s.setProperty('--ay', ay + 'px'); s.setProperty('--aclip', ac);
+      s.setProperty('--bx', bx + 'px'); s.setProperty('--by', by + 'px'); s.setProperty('--bclip', bc);
+    };
+    const rest = () => set(0, 0, 'inset(0 0 0 0)', 0, 0, 'inset(0 0 0 0)');
+
+    let hovering = false, raf = 0, last = 0, wait = 0;
+    const tick = (t) => {
+      if (!hovering) return;
+      if (t - last >= wait) {
+        last = t;
+        wait = rnd(45, 130); // erratic cadence
+        if (Math.random() < 0.22) {
+          rest(); // brief calm → stutter
+        } else {
+          const big = Math.random() < 0.18 ? 11 : 6; // occasional bigger burst
+          set(
+            +rnd(-big, big).toFixed(1), +rnd(-3, 3).toFixed(1), band(),
+            +rnd(-big, big).toFixed(1), +rnd(-3, 3).toFixed(1), band(),
+          );
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    bar.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'touch') return;
+      hovering = true; last = 0; wait = 0;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(tick);
+    });
+    bar.addEventListener('pointerleave', () => {
+      hovering = false;
+      cancelAnimationFrame(raf);
+      rest();
+    });
+  }
+</script>

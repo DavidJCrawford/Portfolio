@@ -1,0 +1,102 @@
+---
+import { pad, type Piece } from '../lib/pieces';
+
+interface Props { piece: Piece }
+const { piece } = Astro.props;
+const { entry, kind, num, href } = piece;
+const { title, dek, date } = entry.data;
+
+const label = `${kind === 'article' ? 'Article' : 'Project'} · ${pad(num)}`;
+const year =
+  kind === 'project' ? entry.data.year : new Date(date).getFullYear().toString();
+const meta = kind === 'article' ? entry.data.readingTime : entry.data.role;
+const iso = new Date(date).toISOString();
+const action = kind === 'article' ? 'Read' : 'View';
+---
+
+<article class="card block">
+  <a class="unstyled card-link" href={href}>
+    <div class="card-top">
+      <p class="eyebrow">{label}</p>
+      <h3 class="card-title">{title}</h3>
+      <p class="card-dek">{dek}</p>
+    </div>
+    <div class="card-foot">
+      <p class="card-meta">
+        <time datetime={iso}>{year}</time>
+        {meta && <><span class="dot" aria-hidden="true">·</span><span>{meta}</span></>}
+      </p>
+      <p class="card-action">{action} <span aria-hidden="true">→</span></p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card { transition: background var(--dur) var(--ease); }
+
+  /* TE tile: centred content, generous whitespace, action pinned to the bottom. */
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: clamp(300px, 22vw, 380px);
+    padding: clamp(var(--space-5), 2.4vw, var(--space-6)) clamp(var(--space-4), 1.8vw, var(--space-5));
+    height: 100%;
+  }
+  .card-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .card-title {
+    font-family: var(--display);
+    font-size: var(--fs-h3);
+    font-weight: 700;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+    text-decoration-color: transparent;
+    transition: text-decoration-color var(--dur) var(--ease);
+  }
+  .card-dek {
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 32ch;
+    line-height: 1.4;
+    font-size: 0.975rem;
+  }
+  .card-foot {
+    margin-top: auto;
+    padding-top: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .card-meta {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+  .dot { color: var(--rule-strong); }
+  .card-action {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+  }
+
+  /* Restraint on interaction: warm the block + reveal the title underline. */
+  .card:hover { background: var(--paper-hover); }
+  .card-link:hover .card-title { text-decoration-color: var(--accent); }
+  .card-link:hover .card-action { color: var(--accent); }
+</style>

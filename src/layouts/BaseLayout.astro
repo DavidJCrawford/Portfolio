@@ -1,0 +1,50 @@
+---
+// Self-hosted, open-source type — no external font CDN (spec.md §5).
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import '@fontsource/ibm-plex-mono/latin-600.css';
+import '../styles/fonts.css'; // self-hosted Newsreader (Latin, normal + italic)
+import '../styles/global.css';
+import HeaderBar from '../components/HeaderBar.astro';
+import Footer from '../components/Footer.astro';
+import Cursor from '../components/Cursor.astro';
+import { withBase } from '../lib/url';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+}
+const { title, description, canonicalUrl } = Astro.props;
+const fullTitle = title === 'David J Crawford' ? title : `${title} — David J Crawford`;
+const desc =
+  description ??
+  'Writing on the craft of product — transdisciplinary design, generative and agentic AI, and the work of keeping people safe and helping them thrive in a world beset with change. By David J Crawford.';
+const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <HeaderBar />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <Cursor />
+  </body>
+</html>

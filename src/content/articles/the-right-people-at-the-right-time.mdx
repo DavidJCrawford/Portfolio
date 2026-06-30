@@ -1,0 +1,100 @@
+---
+title: "The Right People, at the Right Time"
+dek: "Why AI in security & access control only works when it's underpinned by deterministic foundations."
+date: 2026-06-26
+featured: true
+order: 1 # pinned top-left — lead the gallery as the most recent article
+readingTime: "7 min read"
+accent: paper
+---
+As a Product Manager focusing on AI and Installer Experience in the Security & Access Control industry I get a version of the same question a lot lately: *How do we put AI at the heart of our security, and how do we make sure it still looks like a good decision in ten years?*
+
+It’s an understandable instinct. It’s also, in my view, a high-risk bet where things can go wrong if not carefully managed. The seductive pitch is “AI everything”: cameras that think, doors that reason, a building that runs itself. The trouble is that the most important sentence in security has nothing to do with AI at all:
+
+**Security and access control is about letting the right people in at the right time, and keeping the wrong people out.**
+
+That’s the core job and everything else is additional value built on this core. Once you sit with that sentence for a moment, the role of AI gets much clearer and much more disciplined than the marketing might have you believe.
+
+---
+
+**1\. The core job is a deterministic promise**
+
+Let the right people in. Keep the wrong people out. Notice what kind of promise that is. It isn't a *probably*. A door doesn't get to be 94% confident. An access decision is binary, auditable, and final: this credential, at this door, at this time, is either authorised or it isn't. When a secure space is breached, a door forced, a perimeter crossed, the system has to detect it and raise the alarm – every time, not *most* times.
+
+This is the part the AI hype skips over. The systems that run buildings, controllers, readers, locks, alarms, are *deterministic* by design. Given the same inputs, they produce the same output every time, and you can prove why. That predictability isn’t a limitation to be modernised away; it’s the whole reason the system can be trusted with people’s safety.
+
+---
+
+**2\. Why “AI-first” is the wrong foundation**
+
+Here’s the distinction that should anchor every decision you make: today’s AI, the large-model, generative kind, is *probabilistic*. Traditional control systems are *deterministic*.
+
+Probabilistic systems are extraordinary at one thing the old world was terrible at: understanding intent. You can express what you want in plain language and a capable agent will work out how to achieve it, without anyone having to pre-program every button and branch in advance. That’s genuinely new, and powerful.
+
+But probabilistic systems are, by their nature, occasionally wrong in ways you can’t fully predict. That’s a wonderful property for a brainstorming partner and a catastrophic one for a lock. You do not want the front door of your building to open because a model was *fairly sure* the person outside was the CFO.
+
+So the real design question isn’t “AI or deterministic?” It’s “how do we get the intelligence of the first without surrendering the guarantees of the second?” Replacing proven control systems wholesale with AI isn’t progress. It’s a liability waiting for an incident report.
+
+---
+
+**3\. The architecture that actually future-proofs a building**
+
+The answer is two layers, and the order matters enormously.
+
+At the foundation sits a **deterministic workflow engine** – the rule-bound, auditable spine that actually executes. It decides what is allowed, enforces it identically every time, integrates with the physical estate, and leaves a trail you can prove in front of an auditor or a court. There’s no guessing here.
+
+Above it sits an **AI orchestration layer** – the agentic, intent-driven part. This is where the intelligence lives: interpreting what an operator is trying to do, reasoning across messy real-world signals, drafting a response to an unfolding situation, and orchestrating the workflows beneath it. This layer is clever and fast.
+
+How those two layers relate is what matters most. **The AI proposes; the deterministic engine disposes.** Intelligence sits on top of guarantees, never the other way around. The agent can reason about a 2 a.m. door-forced alarm, correlate it with a contractor schedule, and recommend an action in seconds – but the action it triggers runs through the same hardened, deterministic rules that would have governed a human operator. Nothing the AI does escapes the rails.
+
+This is why, in our own work, the unglamorous priority has been the workflow engine first. You can’t safely bolt an intelligent orchestration layer onto a building until the deterministic foundation it orchestrates is genuinely robust. Get that order wrong, and you’ve built a very expensive way to make confident mistakes at machine speed.
+
+---
+
+**4\. The doorman didn’t disappear, he got promoted**
+
+There’s a fear baked into every AI conversation, so let’s talk about it. 80 years ago large buildings employed doormen. Automated access control made much of this work unnecessary – and in the same move, it gave us campuses, hospitals, and airports operating at a level of safety that no amount of manual labour could ever have delivered.
+
+Agentic AI follows the same arc. It won’t make security people less important; it removes the drudgery, the alarm triage, the log-trawling, the swivel-chair between six systems, and frees them to do the judgement work that humans are uniquely good at. The goal shouldn’t be a building with nobody watching. It should be a building where the people watching can finally see everything that matters.
+
+---
+
+**5\. The do’s and don’ts**
+
+If you’re specifying AI for a security system today, here’s the short version.
+
+**Do:**
+
+-   **Build the deterministic spine first.** Insist that every access, alarm, and life-safety decision runs through auditable rules that behave identically every time. AI sits on top of this, never underneath it.
+    
+-   **Keep a human in the loop where the stakes are highest.** Use AI confidently for low and medium-risk work; demand stronger review and lower autonomy for the security-critical paths like authentication, authorisation, anything that opens a door or silences an alarm.
+    
+-   **Demand transparency.** If you can’t get an answer to “why did the system do that?”, you don’t have a security system, you have a guess. Every AI-assisted decision should be explainable and logged.
+    
+-   **Own your deployment model.** A serious platform should run where *your* risk profile requires – cloud, on-premise, or at the edge on the controller – not where the vendor’s billing model prefers.
+    
+-   **Treat your data as an asset and a liability.** Be deliberate about what you capture, where it lives, who can see it, and how long you keep it. Sovereignty and retention are design decisions, not afterthoughts.
+    
+
+**Don’t:**
+
+-   **Don’t buy “AI” as a feature.** A clever camera is a gadget. A platform is what’s still serving you in a decade.
+    
+-   **Don’t expect AI to fix a weak operation.** AI doesn’t repair broken processes or sloppy procedures – it accelerates whatever you already have. A messy security operation with AI bolted on is just a faster mess.
+    
+-   **Don’t normalise invasiveness.** The fact that a model *can* watch, score, and profile everyone who walks through your lobby doesn’t mean it should. Future-proofing means anticipating tomorrow’s regulation and tomorrow’s standards for trust.
+    
+-   **Don’t let the probabilistic layer make deterministic promises.** If a decision must be right every time, it does not belong to the AI. It belongs to the engine underneath it.
+    
+
+---
+
+**6\. What “future-proof” really means**
+
+Future-proofing isn’t picking the model with the best benchmark this quarter – that model will be obsolete before the building’s fit-out is finished. It’s choosing an *architecture* that lets you swap the intelligence layer freely while the deterministic foundation stays rock-solid beneath it.
+
+The buildings that age well will be the ones that treated AI as an orchestration layer over a trustworthy core, kept their humans in the loop where it counted, and stayed honest about the difference between *clever* and *certain*. The right people in at the right time. The wrong people kept out. Every time – not *most* times.
+
+If you’re wrestling with this on a real project, I’d genuinely like to hear how you’re thinking about the split between the intelligent layer and the guaranteed one. That line is where the next decade of good security design will be drawn.
+
+— **David J Crawford**

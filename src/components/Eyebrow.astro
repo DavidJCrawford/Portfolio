@@ -1,0 +1,6 @@
+---
+// Mono kicker/label — the catalogue voice (e.g. "ARTICLE · 001").
+interface Props { class?: string }
+const { class: cls } = Astro.props;
+---
+<p class:list={['eyebrow', cls]}><slot /></p>

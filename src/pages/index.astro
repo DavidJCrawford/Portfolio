@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Gallery from '../components/Gallery.astro';
+---
+
+<BaseLayout title="David J Crawford">
+  <!-- The landing: full-bleed blocks + a TE-style tile grid on a white field. -->
+  <div class="landing">
+    <!-- HERO: a full-bleed block, edge to edge (TE EP-133 top banner) -->
+    <section class="block hero">
+      <div class="shell hero-inner">
+        <p class="eyebrow">David J Crawford</p>
+        <h1 class="statement">
+          Product is a craft practised at the intersection of<br />
+          <span class="lens-line"><em>viability</em> // <em>desirability</em> // <em>feasibility</em>.</span>
+        </h1>
+        <p class="sub">
+          Writing on how product is crafted through transdisciplinary design in the
+          ever-changing world of generative AI.
+        </p>
+        <a class="unstyled jump" href="#exhibition">View the exhibition ↓</a>
+      </div>
+    </section>
+
+    <Gallery />
+
+    <!-- ABOUT: a full-bleed block, the three lenses (spec.md §1) -->
+    <section id="about" class="block about">
+      <div class="shell about-inner">
+        <p class="eyebrow">About</p>
+        <div class="about-grid">
+          <p class="lede">
+            I write about crafting product through the lens, tools and techniques of
+            transdisciplinary design, and the leverage of generative and agentic AI.
+            I'm motivated by products and systems that not only keep people
+            <em>safe and secure</em> but help them <em>genuinely thrive</em>, in a
+            world of unprecedented change.
+          </p>
+          <dl class="lenses">
+            <div>
+              <dt>Viability</dt>
+              <dd>Does it align and deliver value? The lens of product and strategy.</dd>
+            </div>
+            <div>
+              <dt>Desirability</dt>
+              <dd>Do humans want to use this? The lens I learned leading UX.</dd>
+            </div>
+            <div>
+              <dt>Feasibility</dt>
+              <dd>Can we build this? The lens I learned as an engineer.</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .landing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--block-gap);
+    /* No top padding: the hero block sits flush against the header bar. */
+  }
+
+  /* Hero + about are FULL-BLEED blocks: the colour goes edge to edge, content
+     sits in the shared shell so it aligns with the header and the gallery grid. */
+  .hero-inner,
+  .about-inner { padding-block: clamp(var(--space-6), 6vw, var(--space-8)); }
+
+  /* --- Hero ---------------------------------------------------------------- */
+  .statement {
+    font-family: var(--display);
+    /* big & bold; vw-scaled + capped so the nowrap lens line always fits the frame */
+    font-size: clamp(2rem, 5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.032em;
+    margin-top: var(--space-4);
+    text-wrap: balance;
+  }
+  /* keep "viability // desirability // feasibility" on one line (wrap only on mobile) */
+  .statement .lens-line { white-space: nowrap; }
+  @media (max-width: 640px) {
+    .statement .lens-line { white-space: normal; }
+  }
+  .statement em { font-style: normal; color: var(--accent); }
+  .sub {
+    font-size: var(--fs-dek);
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin-top: var(--space-5);
+    line-height: 1.5;
+  }
+  .jump {
+    display: inline-block;
+    margin-top: var(--space-5);
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 2px;
+    transition: color var(--dur) var(--ease);
+  }
+  .jump:hover { color: var(--accent); }
+
+  /* --- About --------------------------------------------------------------- */
+  .about-grid {
+    margin-top: var(--space-5);
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+  .lede {
+    font-size: var(--fs-dek);
+    line-height: 1.5;
+    max-width: 40ch;
+  }
+  .lede em { font-style: italic; }
+  .lenses { display: grid; gap: var(--space-4); }
+  .lenses dt {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: var(--space-1);
+  }
+  .lenses dd { margin: 0; color: var(--ink-soft); line-height: 1.45; }
+  @media (max-width: 46rem) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+</style>

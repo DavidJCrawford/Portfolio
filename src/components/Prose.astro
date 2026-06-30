@@ -1,0 +1,69 @@
+---
+// Owns all MDX body styling so every article/project reads identically (DESIGN.md §6).
+---
+<div class="prose measure"><slot /></div>
+
+<style is:global>
+  /* Centred reading column (margin-inline:auto) to match the masthead/footer. */
+  .prose { font-size: var(--fs-body); line-height: var(--lh-body); margin-inline: auto; }
+
+  /* Vertical rhythm: space between flow elements, none above the first */
+  .prose > * + * { margin-top: var(--space-4); }
+  .prose > h2 + *, .prose > h3 + * { margin-top: var(--space-3); }
+
+  .prose h2 { font-size: var(--fs-h2); margin-top: var(--space-6); }
+  .prose h3 { font-size: var(--fs-h3); margin-top: var(--space-5); }
+
+  .prose p { hyphens: auto; }
+
+  /* A single tasteful raised first line on the opening paragraph */
+  .prose > p:first-of-type::first-line {
+    font-variant-caps: small-caps;
+    letter-spacing: 0.02em;
+  }
+
+  .prose a { font-style: normal; }
+
+  .prose ul, .prose ol { padding-left: 1.4em; }
+  .prose li + li { margin-top: var(--space-1); }
+  .prose li::marker { color: var(--ink-soft); }
+
+  .prose blockquote {
+    border-left: 2px solid var(--accent);
+    padding-left: var(--space-4);
+    margin-inline: 0;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .prose figure { margin-block: var(--space-5); }
+  .prose figcaption {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin-top: var(--space-2);
+  }
+
+  .prose hr { border: 0; border-top: 1px solid var(--rule); margin-block: var(--space-6); }
+
+  .prose code {
+    font-family: var(--mono);
+    font-size: 0.875em;
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+  .prose pre {
+    background: color-mix(in srgb, var(--ink) 5%, transparent);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: var(--space-4);
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  .prose pre code { background: none; padding: 0; }
+
+  .prose :is(h2, h3) { font-weight: 700; }
+</style>

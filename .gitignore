@@ -1,0 +1,21 @@
+# build output
+dist/
+.output/
+
+# dependencies
+node_modules/
+
+# astro
+.astro/
+
+# logs / env / os
+*.log
+.env
+.env.*
+.DS_Store
+
+# working notes — not part of the published site, kept out of the public repo
+brain/
+
+# local Claude Code settings (machine-specific)
+.claude/settings.local.json

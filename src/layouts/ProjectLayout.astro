@@ -1,0 +1,103 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Prose from '../components/Prose.astro';
+import { withBase } from '../lib/url';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { entry: CollectionEntry<'projects'> }
+const { entry } = Astro.props;
+const { title, dek, year, role, stack, links } = entry.data;
+
+// A museum-placard masthead of metadata (DESIGN.md §6).
+const placard = [
+  { label: 'Year', value: year },
+  { label: 'Type', value: role },
+  { label: 'Stack', value: stack.join(' · ') },
+];
+---
+
+<BaseLayout title={title} description={dek}>
+  <article class="project">
+    <div class="shell">
+      <header class="masthead measure">
+        <p class="eyebrow">Project</p>
+        <h1 class="title">{title}</h1>
+        <p class="dek">{dek}</p>
+      </header>
+
+      <dl class="placard">
+        {placard.filter((row) => row.value).map((row) => (
+          <div class="row">
+            <dt>{row.label}</dt>
+            <dd>{row.value}</dd>
+          </div>
+        ))}
+        {links && links.length > 0 && (
+          <div class="row">
+            <dt>Links</dt>
+            <dd class="links">
+              {links.map((l) => <a href={l.href}>{l.label}</a>)}
+            </dd>
+          </div>
+        )}
+      </dl>
+
+      <hr class="hairline rule" />
+
+      <Prose>
+        <slot />
+      </Prose>
+
+      <footer class="endnote measure">
+        <a class="unstyled back" href={withBase('#exhibition')}>← Back to the exhibition</a>
+      </footer>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .project { padding-block: clamp(var(--space-6), 4vw, var(--space-8)); }
+  .masthead { margin-inline: auto; }
+  .title { margin-top: var(--space-3); }
+  .dek {
+    font-size: var(--fs-dek);
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    margin-top: var(--space-3);
+    max-width: 48ch;
+  }
+
+  .placard {
+    max-width: var(--measure);
+    margin: var(--space-5) auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-4);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding-block: var(--space-4);
+  }
+  .row dt {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    margin-bottom: var(--space-1);
+  }
+  .row dd { margin: 0; font-size: 1rem; line-height: 1.4; }
+  .links { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+  .rule { margin-block: var(--space-5); max-width: var(--measure); margin-inline: auto; }
+  .endnote { margin-inline: auto; margin-top: var(--space-7); }
+  .back {
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    transition: color var(--dur) var(--ease);
+  }
+  .back:hover { color: var(--accent); }
+</style>

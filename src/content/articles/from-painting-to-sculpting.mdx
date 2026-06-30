@@ -1,0 +1,250 @@
+---
+title: "From Painting to Sculpting"
+dek: "A more prototype-first, curation-led UX practice."
+date: 2026-02-02
+featured: true
+readingTime: "8 min read"
+accent: mist
+---
+Back in January 2021 I sent my colleague Tony (who was Massey University’s Head of Industrial Design at the time) a link to [an MIT Technology Review article](https://www.technologyreview.com/2021/01/05/1015754/avocado-armchair-future-ai-openai-deep-learning-nlp-gpt3-computer-vision-common-sense/) about an interesting milestone in AI. Researchers had asked an image model to draw “an avocado armchair”, and it produced a bunch of plausible variations. The article’s broader point was about grounding language in vision so models have a better handle on everyday concepts, not just fluent text.
+
+Given Tony’s skill and passion for product design, I honestly expected him to be at least a bit dismissive. I thought he might treat it like a novelty. Fun images, sure, but not “real design”.
+
+He surprised me. Tony’s take was basically: this matters, and not because the first outputs are perfect. It matters because once a model can generate lots of credible variants on demand, the bottleneck moves. The value shifts toward curation. Someone still needs to decide what is best for a given context, and why.
+
+I have another memory that always snaps into place right next to that conversation.
+
+About ten years earlier, a friend and I were building a deck out the front of his house. We got stuck debating the “best” way to screw down the decking boards. Centered, off-centered, what pattern, what spacing, what looks “right”. His wife Michelle (who is also an Engineer) wandered out, looked at us for a moment, then laughed and said something like: you two really have had efficiency trained out of you. There is no “best” way. There are a whole bunch of possible ways that are roughly equivalent, so just pick one and get it done.
+
+That idea has followed me around for years, especially in product work. Whether they’re conscious of it or not, Engineers and Designers both have a habit of hunting for the one optimal answer. A lot of the time, it doesn’t exist. There are multiple good options, and the bigger skill is knowing which differences actually matter.
+
+That’s why Tony’s curation point hit so hard. Michelle’s insight was the warning label. Don’t chase perfection in a space where there are several similar outcomes. Instead, make real progress, generate real options, and choose well.
+
+Now fast forward to today.
+
+I’ve been leading an AI research team for a few months now. My team has developed a process for using agentic coding tools to accelerate product development. In that world, creating a working variant is cheap. Exploring multiple directions is cheap. Iteration is cheap.
+
+That changes what UX Design can be.
+
+---
+
+## The shift: from painting to sculpting
+
+Traditional UX workflows often look like painting. You plan, you lay down a composition, you refine it, and you hand it off. Tools like Figma are fantastic for clarity, collaboration, and systems, but they naturally pull you toward designing representations of software instead of designing in software.
+
+Agentic coding tools and modern editor workflows pull you in the opposite direction. They make it realistic to build something you can click, break, and feel, early. That’s the “sculpting” metaphor I keep coming back to, and it’s [exactly how Cursor’s Head of Design, Ryo Lu, describes it](https://www.dialectic.fm/ryo-lu). You get something, poke at it, remove parts, rearrange parts, do it again a few times, then pick the right one.
+
+The point is not that every designer needs to become a full-time engineer. The point is that prototyping has become dramatically more accessible, and that changes the economics of design decisions.
+
+It’s one thing to argue about a flow in a static mock.
+
+It’s another thing to try two working versions, put them in front of someone, and see where they hesitate.
+
+---
+
+## Why prototypes beat mocks for the questions that actually hurt
+
+Static mocks are great for a lot of things. Alignment. Visual hierarchy. Content structure. Stakeholder communication.
+
+But prototypes answer the questions that tend to bite you later:
+
+-   What happens when data is missing, messy, duplicated, or slow?
+    
+-   What does the flow feel like on keyboard only?
+    
+-   Where do errors actually happen?
+    
+-   What is the “time to confidence” for a user who has never seen this screen before?
+    
+-   Which details are load-bearing, and which are basically decorative?
+    
+
+Prototypes force you to confront reality: state, latency, permissions, validation, edge cases, and accessibility. That is where most UX debt comes from.
+
+This is also why the “designers should embrace prototyping” advice is popping up more in conversations around tools like Cursor, including [mainstream coverage of Cursor expanding into more of the creation workflow](https://www.wired.com/story/cursor-launches-pro-design-tools-figma/).
+
+---
+
+## More options, faster, means taste becomes the bottleneck
+
+Here is where Tony and Michelle click together.
+
+Tony’s point was that when generation becomes cheap, curation becomes valuable. Michelle’s point was that “perfect” is usually a mirage. Together they imply a new workflow: stop worshipping the one ideal answer, produce a handful of strong candidates, then use taste and context to curate what ships.
+
+And the real craft in that curation is discrimination. You get good at spotting which aspects of the experience truly matter for outcomes in this context, and which aspects are largely equivalent. If you can tell the difference, you stop burning hours debating screw placement. You spend your time on the decisions that actually change the user’s experience.
+
+This is also the part of the avocado chair story that still matters. The interesting thing was never the chair. It was the flood of plausible variants from a single prompt, and the fact that a human still has to decide what “good” means, then be accountable for that decision.
+
+---
+
+## Curation is a real discipline, not just vibes
+
+When people hear “curation” in a product setting, they sometimes reduce it to taste and preference. But curation is a serious, formal practice in the art and design world. There are dedicated postgraduate programs focused on curatorial practice, critical frameworks, context, and public meaning-making. ([Goldsmiths, University of London](https://www.gold.ac.uk/pg/mfa-curating/))
+
+I bring that up because it reframes what a “senior” designer looks like in an AI-heavy workflow.
+
+Not the person who can push the most pixels.
+
+The person who can reliably choose the right direction, for the right reasons, while keeping the product coherent over time.
+
+---
+
+## A new UX approach: prototype-first, curation-led
+
+Here is the approach I think will become normal, and I think it maps cleanly onto how agentic coding already accelerates engineering.
+
+**1\. Start with constraints, not screens**
+
+Before generating anything, write down what matters:
+
+-   User goal and situation
+    
+-   Success metrics (speed, accuracy, confidence, reduction in support calls)
+    
+-   Accessibility needs
+    
+-   Technical constraints
+    
+-   What you refuse to compromise on
+    
+
+This is the part that keeps AI from producing “design slop”. Constraints are your guardrails.
+
+**2\. Generate multiple candidates on purpose**
+
+Do not ask for “the best design”. Ask for 6 to 10 different approaches that each trade off something different:
+
+-   One optimised for speed
+    
+-   One optimised for clarity
+    
+-   One optimised for fewer errors
+    
+-   One optimised for first-time users
+    
+-   One optimised for dense expert workflows
+    
+
+This is where agentic tools shine because the cost of exploring is low.
+
+**3\. Prototype the top 2 or 3 in the real material**
+
+This is the move from painting to sculpting.
+
+Use Cursor (or a similar tool) to get real interaction, real state, real components, and enough fidelity that a human can feel friction. The prototype does not need to be production-ready. It just needs to be honest.
+
+**4\. Curate using a simple rubric**
+
+Curation becomes much easier if you make it explicit. Something like:
+
+-   Does it reduce errors?
+    
+-   Does it reduce cognitive load?
+    
+-   Does it scale to edge cases?
+    
+-   Is it accessible by default?
+    
+-   Does it align with our design system and product voice?
+    
+-   What trade-off are we accepting, and is it worth it?
+    
+
+5\. Pick one, then iterate fast
+
+Pick one direction and commit to it. Not forever, just long enough to learn something real. This is where Michelle’s insight comes in. You don’t need the theoretical best. You need the best choice given your constraints and the evidence you can gather now.
+
+---
+
+## The agentic design team idea
+
+One way to think about this, especially if you’re already running agentic workflows in engineering, is as a small studio of helpers.
+
+-   A brief helper that tightens the problem statement and constraints
+    
+-   A variant generator that produces options inside your system primitives
+    
+-   A critic that stress-tests flows and edge cases
+    
+-   An accessibility reviewer
+    
+-   A build helper that gets prototypes running quickly
+    
+
+The UX designer is the editor-in-chief. You set the constraints, you decide what to keep, you decide what to throw away, and you make sure the product stays coherent.
+
+That is design. It’s just a different allocation of effort.
+
+---
+
+## Where Figma still fits
+
+This is not a “Figma is dead” argument.
+
+Figma remains excellent for:
+
+-   Design systems and libraries
+    
+-   Shared language across teams
+    
+-   Quick visual exploration
+    
+-   Mapping journeys and information architecture
+    
+
+But I think the center of gravity shifts.
+
+Figma becomes more like the map.
+
+Cursor becomes more like the terrain.
+
+---
+
+## The skill upgrade for designers
+
+If this direction is right, then the designer skill stack shifts toward:
+
+-   framing problems well
+    
+-   writing strong constraints
+    
+-   prototyping fluently enough to explore interaction honestly
+    
+-   evaluating trade-offs with clarity
+    
+-   knowing what matters and what is equivalent
+    
+-   curation as a repeatable practice, not a gut feel
+    
+
+That last one is the big change. When tools can generate a dozen decent versions, the designer who can consistently pick the right one becomes incredibly high leverage.
+
+---
+
+## In Closing: the point is not to stop designing, it’s to move upstream
+
+The avocado chair story was a useful spark because it showed how quickly “making variants” could become cheap. OpenAI’s work connecting language and images helped push that broader wave forward.
+
+But the more important lesson is human.
+
+Tony’s surprise was that the future didn’t require less design judgment, it required more.
+
+Michelle’s insight was that our obsession with perfection can waste time in spaces where multiple choices are essentially equivilent.
+
+Put those together and you get a practical UX mindset for the next few years:
+
+Generate options quickly.
+
+Prototype the ones that matter.
+
+Spend your energy on the decisions that actually change real outcomes.
+
+Curate with taste, context, and evidence.
+
+Ship, learn, repeat.
+
+That’s the move from painting to sculpting, from hands-on design to design-driven curation.
+
+— **David J Crawford**
+
+*Seeking perfection is a great way to avoid shipping. What would you prototype this week if you weren’t trying to get it ‘perfect’ on the first go?*

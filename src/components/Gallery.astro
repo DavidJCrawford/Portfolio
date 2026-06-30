@@ -1,0 +1,58 @@
+---
+import PieceCard from './PieceCard.astro';
+import { getExhibition } from '../lib/pieces';
+
+// The homepage shows only `featured` pieces — curation is the point (spec.md §2).
+const pieces = await getExhibition({ featuredOnly: true });
+const total = pieces.length;
+---
+
+<section id="exhibition" class="exhibition">
+  <div class="shell">
+    <header class="head">
+      <p class="eyebrow">The Exhibition · {String(total).padStart(2, '0')} pieces</p>
+      <p class="head-title">Selected writing &amp; projects.</p>
+    </header>
+
+    <div class="grid">
+      {pieces.map((piece) => <PieceCard piece={piece} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .exhibition {
+    --head-pad: clamp(var(--space-6), 5vw, var(--space-8));
+    /* whitespace below the article blocks == whitespace above "THE EXHIBITION".
+       Below-gap = this padding + the landing block-gap; the 0.5rem matches the
+       header text's baseline offset so it lands exactly on the top gap. */
+    padding-bottom: calc(var(--head-pad) - var(--block-gap) + 0.5rem);
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    /* equal white space above and below the header (subtract the landing block-gap above) */
+    padding-top: calc(var(--head-pad) - var(--block-gap));
+    padding-bottom: var(--head-pad);
+  }
+  .head-title {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: var(--fs-h3);
+  }
+  /* TE-style tile grid: 4 across, clean white gutters, responsive down. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--block-gap);
+  }
+  @media (max-width: 1140px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
