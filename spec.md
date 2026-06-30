@@ -22,11 +22,15 @@ disciplined.
 Portfolio/
 ├── spec.md             ← you are here (master entry point: what & why)
 ├── DESIGN.md           ← the design system (aesthetic, palette, type, components)
-├── brain/              ← the IDEAS behind the site (Open Knowledge Format v0.1 bundle; see brain/index.md)
-│   ├── index.md          bundle index (declares okf_version) + log.md (change history)
-│   ├── concepts/         the through-line, 3 lenses, transdisciplinary design, AI, safe/secure, …
-│   ├── situations/       Portfolio Site · School of Transdisciplinary Design
-│   └── decisions/        positioning decisions
+├── brains/             ← the IDEAS (Open Knowledge Format v0.1 bundles, one per subject)
+│   ├── site/             the site's own brain — see brains/site/index.md
+│   │   ├── index.md        bundle index (declares okf_version) + log.md (change history)
+│   │   ├── people/         David J Crawford
+│   │   ├── concepts/       the through-line, 3 lenses, transdisciplinary design, AI, safe/secure, …
+│   │   ├── situations/     Portfolio Site · University Advisory
+│   │   ├── decisions/      positioning + publishing decisions
+│   │   └── technical/      how the site is built (architecture, tokens, cursor, deployment, …)
+│   └── ai-in-security/   article brain backing "The Right People, at the Right Time"
 ├── astro.config.mjs    ← Astro + MDX config
 ├── package.json
 ├── public/             ← static assets served as-is (fonts, favicon, og images)
@@ -69,7 +73,7 @@ it. Adding a piece = adding one `.mdx` file with frontmatter; nothing else to to
 ## 1. Positioning — the single idea
 
 Everything on the site ladders up to one through-line. The full thinking lives in the
-brain (`brain/concepts/the-through-line.md` and its links); in short:
+brain (`brains/site/concepts/the-through-line.md` and its links); in short:
 
 > **Product is a craft — practised at the intersection of desirability, feasibility, and
 > viability. The interesting question isn't how capable the models are (they're remarkable);
@@ -79,7 +83,7 @@ brain (`brain/concepts/the-through-line.md` and its links); in short:
 **Tone: understated confidence.** Idea-first, never a CV. A product person so capable he
 doesn't need to sell himself. Model capability matters but isn't *interesting* — the craft
 is. (Reframed 2026-06-29 from an earlier "model capability / human experience / engineering
-reality" framing — see `brain/decisions/`.)
+reality" framing — see `brains/site/decisions/`.)
 
 The three lenses quietly double as three careers — surfaced as where each lens was learned,
 never as a sales pitch:
