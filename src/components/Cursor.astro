@@ -89,9 +89,17 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
       // Low easing so it drifts in slowly and takes its time to catch up.
       pts[0].x = lerp(pts[0].x, mx, 0.08);
       pts[0].y = lerp(pts[0].y, my, 0.08);
+      const MAX_GAP = 12; // px between adjacent circles — capped so the goo never splits apart
       for (let i = 1; i < N; i++) {
         pts[i].x = lerp(pts[i].x, pts[i - 1].x, 0.18);
         pts[i].y = lerp(pts[i].y, pts[i - 1].y, 0.18);
+        // if a fast move stretched this link too far, pull it back in to the cap
+        const dx = pts[i].x - pts[i - 1].x, dy = pts[i].y - pts[i - 1].y;
+        const d = Math.hypot(dx, dy);
+        if (d > MAX_GAP) {
+          pts[i].x = pts[i - 1].x + (dx / d) * MAX_GAP;
+          pts[i].y = pts[i - 1].y + (dy / d) * MAX_GAP;
+        }
       }
 
       // Turn #FF4B33 only after the pointer has been still ~500ms; otherwise the chasing
