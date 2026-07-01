@@ -24,3 +24,4 @@ Change the system in one file and every block, rule and label follows.
 - [Typography](./typography.md)
 - [Block Layout](./block-layout.md)
 - [Progressive Enhancement](./progressive-enhancement.md)
+- [Less, but Better](../concepts/less-but-better.md)

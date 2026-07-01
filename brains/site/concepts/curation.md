@@ -20,6 +20,7 @@ Don't chase the one perfect answer; generate strong options and curate well.
 
 # Related
 
+- [Less, but Better](./less-but-better.md)
 - [Generative AI](./generative-ai.md)
 - [Desirability](./desirability.md)
 - [Wisdom Work](./wisdom-work.md)
