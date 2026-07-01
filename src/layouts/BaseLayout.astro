@@ -19,7 +19,7 @@ const { title, description, canonicalUrl } = Astro.props;
 const fullTitle = title === 'David J Crawford' ? title : `${title} — David J Crawford`;
 const desc =
   description ??
-  'Writing on the craft of product — transdisciplinary design, generative and agentic AI, and the work of keeping people safe and helping them thrive in a world beset with change. By David J Crawford.';
+  'David J Crawford writes about crafting product that keeps people safe and helps them thrive in the ever-changing world of generative and agentic AI.';
 const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
 ---
 

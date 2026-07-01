@@ -22,6 +22,8 @@ Product is a craft, not a thing. It can be crafted — deliberately, well.
 # Related
 
 - [The 3 Lenses of Innovation](./the-3-lenses-of-innovation.md)
+- [Design Thinking](./design-thinking.md)
+- [Transdisciplinary Design](./transdisciplinary-design.md)
 - [Curation](./curation.md)
 - [Engineering Is Not Construction](./engineering-is-not-construction.md)
 - [Good Strategy](./good-strategy.md)
