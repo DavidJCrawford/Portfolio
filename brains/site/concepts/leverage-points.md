@@ -8,7 +8,7 @@ timestamp: 2026-07-01T00:00:00Z
 
 # Summary
 
-Donella Meadows' ranking of places to intervene in a system. The weakest leverage is tweaking numbers and parameters — which is where most effort and energy get spent. The strongest leverage is changing a system's goals, its paradigm (the mindset it arises from), and the ability to transcend paradigms altogether. Most people push hard on low-leverage points and are surprised nothing changes.
+[Donella Meadows](../people/donella-meadows.md)' ranking of places to intervene in a system. The weakest leverage is tweaking numbers and parameters — which is where most effort and energy get spent. The strongest leverage is changing a system's goals, its paradigm (the mindset it arises from), and the ability to transcend paradigms altogether. Most people push hard on low-leverage points and are surprised nothing changes.
 
 # Applied to AI
 
@@ -20,6 +20,7 @@ Spend your effort where the leverage is, not where the activity is.
 
 # Related
 
+- [Donella Meadows](../people/donella-meadows.md)
 - [Systems Thinking](./systems-thinking.md)
 - [Nth-Order Effects](./nth-order-effects.md)
 - [Knowledge as Leverage](./knowledge-as-leverage.md)

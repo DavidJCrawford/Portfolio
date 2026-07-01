@@ -12,11 +12,14 @@ Start with **[The Through-Line](./concepts/the-through-line.md)** — the single
 
 - **[David J Crawford](./people/david-j-crawford.md)** — engineer → design leader → AI product
 - Design influences — **[Dieter Rams](./people/dieter-rams.md)** · **[Antoine de Saint-Exupéry](./people/antoine-de-saint-exupery.md)**
+- Thinkers & authors — [Donella Meadows](./people/donella-meadows.md) · [Richard Rumelt](./people/richard-rumelt.md) · [Roger Martin](./people/roger-martin.md) · [Felix Oberholzer-Gee](./people/felix-oberholzer-gee.md) · [Tim Brown](./people/tim-brown.md) · [David Kelley](./people/david-kelley.md) · [Chip Huyen](./people/chip-huyen.md)
 
 ## Concepts
 
 - **[The Through-Line](./concepts/the-through-line.md)** · **[Product](./concepts/product.md)** · **[The 3 Lenses of Innovation](./concepts/the-3-lenses-of-innovation.md)** ([Desirability](./concepts/desirability.md) · [Feasibility](./concepts/feasibility.md) · [Viability](./concepts/viability.md))
-- **Practice** — [Design Thinking](./concepts/design-thinking.md) · [Transdisciplinary Design](./concepts/transdisciplinary-design.md) · [Less, but Better](./concepts/less-but-better.md) · [Curation](./concepts/curation.md) · [Engineering Is Not Construction](./concepts/engineering-is-not-construction.md) · [AI Engineering](./concepts/ai-engineering.md) · [Good Strategy](./concepts/good-strategy.md)
+- **Design & craft** — [Design Thinking](./concepts/design-thinking.md) · [Transdisciplinary Design](./concepts/transdisciplinary-design.md) · [Ten Principles of Good Design](./concepts/ten-principles-of-good-design.md) · [Less, but Better](./concepts/less-but-better.md) · [Curation](./concepts/curation.md)
+- **Strategy** — [Good Strategy](./concepts/good-strategy.md) · [Playing to Win](./concepts/playing-to-win.md) · [Value-Based Strategy](./concepts/value-based-strategy.md)
+- **Building with AI** — [Engineering Is Not Construction](./concepts/engineering-is-not-construction.md) · [AI Engineering](./concepts/ai-engineering.md)
 - **Systems** — [Systems Thinking](./concepts/systems-thinking.md) · [Leverage Points](./concepts/leverage-points.md) · [Nth-Order Effects](./concepts/nth-order-effects.md) · [Knowledge as Leverage](./concepts/knowledge-as-leverage.md)
 - **AI** — [Generative AI](./concepts/generative-ai.md) · [Agentic AI](./concepts/agentic-ai.md) · [Deterministic vs Probabilistic](./concepts/deterministic-vs-probabilistic.md) · [Wisdom Work](./concepts/wisdom-work.md)
 - **Why** — [Safe](./concepts/safe.md) · [Secure](./concepts/secure.md) · [Security Industry](./concepts/security-industry.md) · [Helping People Thrive](./concepts/helping-people-thrive.md) · [Beset with Change](./concepts/beset-with-change.md)

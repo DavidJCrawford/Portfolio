@@ -25,6 +25,7 @@ Strip to what matters, then get that exactly right.
 
 # Related
 
+- [Ten Principles of Good Design](./ten-principles-of-good-design.md)
 - [Dieter Rams](../people/dieter-rams.md)
 - [Antoine de Saint-Exupéry](../people/antoine-de-saint-exupery.md)
 - [Curation](./curation.md)

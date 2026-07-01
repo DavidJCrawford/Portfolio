@@ -8,7 +8,7 @@ timestamp: 2026-07-01T00:00:00Z
 
 # Summary
 
-A way of seeing the world as interconnected systems rather than isolated parts (Donella Meadows, *Thinking in Systems*). The core insight: **structure drives behaviour** — the same people in different system structures produce different results, so changing the players rarely changes the game. Behaviour comes from feedback loops (balancing loops seek equilibrium; reinforcing loops drive growth or collapse), and systems are non-linear — small pushes can produce large effects, and large pushes none, depending on *where* you push.
+A way of seeing the world as interconnected systems rather than isolated parts ([Donella Meadows](../people/donella-meadows.md), *Thinking in Systems*). The core insight: **structure drives behaviour** — the same people in different system structures produce different results, so changing the players rarely changes the game. Behaviour comes from feedback loops (balancing loops seek equilibrium; reinforcing loops drive growth or collapse), and systems are non-linear — small pushes can produce large effects, and large pushes none, depending on *where* you push.
 
 # Why it matters here
 
@@ -20,6 +20,7 @@ Don't fight the symptom in front of you; understand the structure producing it.
 
 # Related
 
+- [Donella Meadows](../people/donella-meadows.md)
 - [Leverage Points](./leverage-points.md)
 - [Nth-Order Effects](./nth-order-effects.md)
 - [Transdisciplinary Design](./transdisciplinary-design.md)

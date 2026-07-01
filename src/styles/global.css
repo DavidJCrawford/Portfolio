@@ -16,6 +16,9 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  /* Offset in-page anchor jumps (#exhibition, #about) so the sticky header
+     bar doesn't clip the first lines of the target section. */
+  scroll-padding-top: var(--bar-h);
 }
 
 body {

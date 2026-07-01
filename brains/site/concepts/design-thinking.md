@@ -9,7 +9,7 @@ timestamp: 2026-07-01T00:00:00Z
 
 # Summary
 
-A human-centred approach to innovation, associated with IDEO (David Kelley, Tim Brown) and the Stanford d.school. Tim Brown's own definition gives it away: innovation that integrates *the needs of people, the possibilities of technology, and the requirements for business success* — which is precisely the [3 Lenses of Innovation](./the-3-lenses-of-innovation.md), [desirability](./desirability.md), [feasibility](./feasibility.md) and [viability](./viability.md). Those three lenses are Design Thinking's core frame.
+A human-centred approach to innovation, associated with IDEO ([David Kelley](../people/david-kelley.md), [Tim Brown](../people/tim-brown.md)) and the Stanford d.school. Tim Brown's own definition gives it away: innovation that integrates *the needs of people, the possibilities of technology, and the requirements for business success* — which is precisely the [3 Lenses of Innovation](./the-3-lenses-of-innovation.md), [desirability](./desirability.md), [feasibility](./feasibility.md) and [viability](./viability.md). Those three lenses are Design Thinking's core frame.
 
 # How it works
 
@@ -25,6 +25,8 @@ A human-centred method for innovation, organised around desirability, feasibilit
 
 # Related
 
+- [Tim Brown](../people/tim-brown.md)
+- [David Kelley](../people/david-kelley.md)
 - [The 3 Lenses of Innovation](./the-3-lenses-of-innovation.md)
 - [Transdisciplinary Design](./transdisciplinary-design.md)
 - [Desirability](./desirability.md)

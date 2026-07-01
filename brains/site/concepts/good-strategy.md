@@ -9,7 +9,7 @@ timestamp: 2026-07-01T00:00:00Z
 
 # Summary
 
-Richard Rumelt's view (*Good Strategy / Bad Strategy*): a real strategy has a **kernel** of three inseparable parts — a clear *diagnosis* of the problem, a *guiding policy* for dealing with it, and a set of *coherent actions* that follow. If any part is missing, you don't have a strategy, you have a wish list or a set of goals. A weak diagnosis is the single most common cause of bad strategy, and a good guiding policy chooses what *not* to do — which is the hard part.
+[Richard Rumelt](../people/richard-rumelt.md)'s view (*Good Strategy / Bad Strategy*): a real strategy has a **kernel** of three inseparable parts — a clear *diagnosis* of the problem, a *guiding policy* for dealing with it, and a set of *coherent actions* that follow. If any part is missing, you don't have a strategy, you have a wish list or a set of goals. A weak diagnosis is the single most common cause of bad strategy, and a good guiding policy chooses what *not* to do — which is the hard part.
 
 # Why it recurs
 
@@ -21,6 +21,9 @@ Diagnose first. Then decide what not to do.
 
 # Related
 
+- [Richard Rumelt](../people/richard-rumelt.md)
+- [Playing to Win](./playing-to-win.md)
+- [Value-Based Strategy](./value-based-strategy.md)
 - [Viability](./viability.md)
 - [Systems Thinking](./systems-thinking.md)
 - [Product](./product.md)
