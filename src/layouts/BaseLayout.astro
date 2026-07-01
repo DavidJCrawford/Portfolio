@@ -9,6 +9,11 @@ import HeaderBar from '../components/HeaderBar.astro';
 import Footer from '../components/Footer.astro';
 import Cursor from '../components/Cursor.astro';
 import { withBase } from '../lib/url';
+// Preload the self-hosted display + serif fonts (their hashed URLs) so they're ready at
+// first paint and the text doesn't reflow when they swap in (fixes the load-in redraw).
+import interUrl from '../styles/fonts/inter-latin-wght-normal.woff2?url';
+import newsreaderUrl from '../styles/fonts/newsreader-latin-opsz-normal.woff2?url';
+import newsreaderItalicUrl from '../styles/fonts/newsreader-latin-opsz-italic.woff2?url';
 
 interface Props {
   title: string;
@@ -28,6 +33,9 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={newsreaderUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={newsreaderItalicUrl} as="font" type="font/woff2" crossorigin />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
     <link rel="canonical" href={canonical} />

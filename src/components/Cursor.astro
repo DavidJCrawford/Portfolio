@@ -56,18 +56,30 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
     // The header bar (sticky, top) and footer (bottom of the page) are both black —
     // flip the comet to white while it's over either. Re-measure on scroll/resize
     // since the footer's on-screen position moves as you scroll.
-    const bar = document.querySelector('.bar');
-    const foot = document.querySelector('.foot');
-    let barBottom = 0, footTop = Infinity, footBottom = -Infinity;
+    // Any of these dark regions flips the comet to white while it's over them.
+    // The header is sticky and the footer / brain canvas shift as you scroll, so
+    // re-measure on scroll/resize.
+    const darkEls = ['.bar', '.foot', '[data-cursor-dark]']
+      .flatMap((s) => Array.from(document.querySelectorAll(s)));
+    // Light regions (e.g. an open drawer) sit ON TOP of a dark canvas — over them the
+    // comet should be black. Measured per-frame since they slide/open.
+    const lightEls = Array.from(document.querySelectorAll('[data-cursor-light]'));
+    let darkBands = [], lightRects = [];
     const measure = () => {
-      if (bar) barBottom = bar.getBoundingClientRect().bottom;
-      if (foot) { const r = foot.getBoundingClientRect(); footTop = r.top; footBottom = r.bottom; }
+      darkBands = darkEls.map((el) => { const r = el.getBoundingClientRect(); return [r.top, r.bottom]; });
     };
     measure();
     addEventListener('resize', measure, { passive: true });
     addEventListener('scroll', measure, { passive: true });
 
+    // There's no API to read the cursor position on load, so it would otherwise sit at
+    // screen-centre after a page navigation until the first move. Restore the last known
+    // position (saved on pagehide) so the comet starts right where the cursor already is.
     let mx = innerWidth / 2, my = innerHeight / 2;
+    try {
+      const s = sessionStorage.getItem('djc-cursor');
+      if (s) { const [a, b] = s.split(',').map(Number); if (isFinite(a) && isFinite(b)) { mx = a; my = b; } }
+    } catch {}
     const pts = circles.map(() => ({ x: mx, y: my }));
     let t = 0, running = true;
     let lastMove = performance.now(); // when the pointer last moved
@@ -76,6 +88,7 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
     const onMove = (e) => { if (e.pointerType === 'touch') return; mx = e.clientX; my = e.clientY; lastMove = performance.now(); };
     addEventListener('pointermove', onMove, { passive: true });
     addEventListener('pointerdown', onMove, { passive: true });
+    addEventListener('pagehide', () => { try { sessionStorage.setItem('djc-cursor', mx + ',' + my); } catch {} }, { passive: true });
     document.addEventListener('visibilitychange', () => {
       running = !document.hidden;
       if (running) requestAnimationFrame(frame);
@@ -106,9 +119,16 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
       // colour is black — or WHITE while the blob is over the black header bar.
       const target = performance.now() - lastMove >= 500 ? 1 : 0;
       caught = lerp(caught, target, target ? 0.1 : 0.25);
-      const onDark =
-        (barBottom && pts[0].y <= barBottom) ||
-        (pts[0].y >= footTop && pts[0].y <= footBottom);
+      // measure light regions per-frame (they slide/open) — but skip hidden ones so a
+      // closed drawer doesn't force a layout read every frame.
+      if (lightEls.length) lightRects = lightEls.map((el) => {
+        if (el.hidden) return [0, 0, 0, 0];
+        const r = el.getBoundingClientRect();
+        return [r.top, r.bottom, r.left, r.right];
+      });
+      const y = pts[0].y, x = pts[0].x;
+      const inLight = lightRects.some(([top, bottom, left, right]) => y >= top && y <= bottom && x >= left && x <= right);
+      const onDark = !inLight && darkBands.some(([top, bottom]) => y >= top && y <= bottom);
       const base = onDark ? WHITE : BLACK;
       const r = Math.round(lerp(base[0], ACCENT[0], caught));
       const gc = Math.round(lerp(base[1], ACCENT[1], caught));

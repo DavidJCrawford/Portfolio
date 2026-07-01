@@ -131,7 +131,7 @@ One spacing scale, used everywhere. Vertical rhythm is consistent; sections brea
 | `--space-7` | `6rem` | section padding (large screens) |
 | `--space-8` | `9rem` | major section breaks |
 
-- `--page-max: 1200px` for the shell; content/reading wrappers use `--measure` (66ch).
+- `--page-max: 1360px` for the shell; content/reading wrappers use `--measure` (66ch).
 - Section vertical padding scales `--space-6 → --space-8` with viewport.
 - Generosity is the default. When unsure, add space.
 
@@ -144,13 +144,14 @@ SaaS nav.
 
 - Height ≈ `64–72px`; full-bleed black; `--on-black` text; no shadow.
 - **Left:** wordmark — **`DJC`**, a *serif-italic monogram* (`--serif`, italic) sized
-  ~1.5rem: a near-twin of the "D" favicon. This is the one place serif appears in the
+  ~2rem: a near-twin of the "D" favicon. This is the one place serif appears in the
   bar — a small brand mark against the mono chrome. (Professional name: David J Crawford.)
   On **header hover** it does a pure-CSS **chromatic-split glitch**: light-grey + `--accent`
   ghost layers (`::before`/`::after`, blurred) jitter behind the steady white text via
   `clip-path` keyframes. Decorative; disabled under `prefers-reduced-motion`.
-- **Right:** nav links stay in **mono**, uppercase, small — e.g. `WRITING · PROJECTS · ABOUT`
-  (only those that exist). Active/hover uses underline or the accent, sparingly.
+- **Right:** nav links stay in **mono**, uppercase, small — `BRAIN | WRITING PROJECTS ABOUT`:
+  a **BRAIN** link (to the node-graph page, §9) set off by a thin vertical divider, then the
+  section links (only those that exist). Active/hover uses underline or the accent, sparingly.
 - Optional thin accent or hairline at the very bottom edge of the bar; otherwise the
   contrast against `--paper` is the divider.
 - It reads as a piece of **equipment** — blocky, utilitarian, precise — against the soft
@@ -171,7 +172,7 @@ line naming the stack (the craft argument, quietly stated).
   - The **gallery** is a grid of `--paper` tiles within the shell — **4 across → 2 → 1**,
     `gap` = `--block-gap`. The white gutter is what reads the tiles apart (block↔page contrast
     is only ~2%).
-- **Hero.** Full-bleed block. Mono eyebrow (`PORTFOLIO`), then the through-line as a large
+- **Hero.** Full-bleed block. Mono eyebrow (`DAVID J CRAWFORD`), then the through-line as a large
   serif statement (`--fs-display`), then a one-line identity sub-statement. Left-aligned.
   States the single idea in the first few seconds.
 - **Gallery.** The exhibition: a light label on the white field, then the tile grid, articles
@@ -222,3 +223,29 @@ line naming the stack (the craft argument, quietly stated).
 - Real semantic HTML; one `<h1>` per page; visible focus states (accent ring).
 - Keyboard-navigable; reduced-motion honoured; `<time datetime>` for dates.
 - Lighthouse: aim 100s. Near-zero JS on content pages. The performance *is* the craft.
+
+---
+
+## 9. The Brain graph (`/brain`)
+
+A deliberate **exception** to everything above: a full-viewport, **dark** canvas that renders
+the [brain](brains/) as an interactive, Obsidian-style node graph. Where the rest of the site is
+paper-on-white and near-still, this page inverts — ink-black field with accent nodes and edges —
+so the accent and the goo interactions can carry it. It's a *tool*, not a document.
+
+- **Dark canvas, accent graph.** A near-black field; nodes and links in `--accent`; hover
+  labels in **white** (the one place white type leads). Locked to a single viewport — no
+  scroll, no footer.
+- **Goo, reused.** Hovering or selecting a node morphs it into the same **SVG goo blob** as the
+  comet cursor (§7); its one-link neighbours become small blobs and everything further **dims**.
+  The transition is staged (node → dim → neighbours) and reverses on the way out. Clicking a
+  node opens a side drawer that renders the note's Markdown, with in-body links that jump between
+  nodes.
+- **A magnetic cursor.** Here the comet gains a gentle pull — nearby nodes lean toward the
+  pointer and spring back. The still-page rule relaxes for this one purposeful surface.
+- **Read live from the Markdown.** The graph is built in the browser from the served brain notes
+  (see README and the brain's own technical notes), so it *is* the source, not a baked copy —
+  and each note is also fetchable at its own URL for agents.
+- **Restraint still holds.** One page, gated behind the nav, with a no-JS fallback listing every
+  note and reduced-motion honoured. The heavy JS lives only here; every content page stays
+  near-zero.

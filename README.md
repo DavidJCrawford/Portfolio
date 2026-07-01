@@ -10,7 +10,7 @@ The site is also an example of the thing it writes about, so the implementation 
 
 - **Astro 5** with the **MDX** integration, built to **static output** — there's no SSR adapter, so `astro build` emits a `dist/` of plain files that deploy anywhere.
 - **Self-hosted, Latin-subset type**: Inter Variable (display), Newsreader Variable (serif body and the italic monogram), IBM Plex Mono (labels).
-- **Design tokens** in plain CSS as the single source of truth, and **near-zero client JavaScript** — two small progressive enhancements, nothing else.
+- **Design tokens** in plain CSS as the single source of truth. Content pages ship **near-zero client JavaScript** (two small progressive enhancements); the one JS-heavy page is the interactive **Brain graph**.
 - **GitHub Pages** via GitHub Actions, served from the `/Portfolio` subpath.
 
 ## How it works
@@ -39,6 +39,10 @@ The site ships almost no JavaScript. The two exceptions are deliberate flourishe
 - **A liquid comet cursor** ([`src/components/Cursor.astro`](src/components/Cursor.astro)) — a chain of seven SVG circles rendered through an SVG goo filter (a Gaussian blur followed by an `feColorMatrix` alpha threshold) that fuses overlapping circles into one liquid shape. The lead eases toward the pointer, each circle chases the one ahead, and an inter-circle gap clamp stops the comet splitting on fast moves. It's black over light areas, white over the black header and footer (their positions are re-measured on scroll and resize), and morphs to the accent with a subtle wobble once the pointer has rested for ~500ms.
 - **A glitch wordmark** ([`src/components/HeaderBar.astro`](src/components/HeaderBar.astro)) — the `DJC` monogram with two ghost copies behind it, drawn as `::before`/`::after` pseudo-elements. JavaScript can't style a pseudo-element directly, so a `requestAnimationFrame` loop sets CSS custom properties the ghosts read for their offset and clip band, producing an erratic chromatic-split glitch while the pointer is over the header.
 
+### The Brain graph
+
+The [`/brain`](src/pages/brain.astro) page renders the knowledge bundles as an interactive, force-directed node graph (one node per note, edges from each note's `# Related` links) — and it reads them **live**. A build step ([`scripts/sync-brain.mjs`](scripts/sync-brain.mjs), wired in as an Astro integration in [`astro.config.mjs`](astro.config.mjs)) copies every `brains/**/*.md` into `public/brain/` with a `manifest.json`; the page fetches and parses those files in the browser at load and builds the graph — so the graph *is* the served source, and each note is also reachable at its own URL (`/brain/<path>.md`) for agents to read. The layout is a hand-rolled force simulation in SVG (no graph library); hovering or selecting a node morphs it into a goo blob (the same SVG filter as the cursor) and dims the rest, and a drawer renders the note's Markdown. It stays static (works on GitHub Pages, no server), degrades to a plain index without JS, and honours reduced motion. See [`src/lib/brainGraph.ts`](src/lib/brainGraph.ts) for the build-time parser behind the no-JS fallback.
+
 ### Progressive enhancement & accessibility
 
 Content pages work with no JavaScript at all. Both interactions are gated on a fine pointer and `prefers-reduced-motion`, so touch and reduced-motion users never load them. The markup is semantic, there's a skip link, the cursor is `aria-hidden`, and the wordmark carries an `aria-label`. One knowing tradeoff: the brand accent on white sits around 3.2:1, below WCAG AA for small text, so it's used for emphasis and never for body copy.
@@ -54,10 +58,13 @@ src/
   content/            articles + projects (MDX), validated by content.config.ts
   content.config.ts   collection schemas (Zod)
   layouts/            Base, Article, Project shells
-  pages/              index + writing/[...slug] + projects/[...slug]
+  pages/              index + writing/[...slug] + projects/[...slug] + brain
   components/         HeaderBar, Footer, Gallery, PieceCard, Cursor, …
-  lib/                pieces.ts (the exhibition), url.ts (base-aware links)
+  lib/                pieces.ts (the exhibition), url.ts, brainGraph.ts (fallback graph)
   styles/             tokens.css, global.css, fonts.css, fonts/
+scripts/
+  sync-brain.mjs      copies brains/ → public/brain/ + manifest (Astro integration)
+public/brain/         generated: served notes + manifest for the live graph (gitignored)
 brains/               OKF v0.1 knowledge bundles — one per subject
   site/               the thinking behind the site itself
   ai-in-security/     backs "The Right People, at the Right Time"
@@ -87,4 +94,4 @@ Drop one `.mdx` file into `src/content/articles/` or `src/content/projects/` wit
 - [`brains/site/`](brains/site/index.md) — the ideas, decisions and technical design behind the site itself.
 - [`brains/ai-in-security/`](brains/ai-in-security/index.md) — the deeper context behind ["The Right People, at the Right Time"](src/content/articles/the-right-people-at-the-right-time.mdx).
 
-An article points at a bundle and a bundle can back more than one article, so a brain is shared simply by being referenced more than once. Bundles cross-link with relative paths rather than duplicating shared concepts. Start at [`brains/site/index.md`](brains/site/index.md).
+An article points at a bundle and a bundle can back more than one article, so a brain is shared simply by being referenced more than once. Bundles cross-link with relative paths rather than duplicating shared concepts. Start at [`brains/site/index.md`](brains/site/index.md) — or explore it as an interactive graph at [`/brain`](https://davidjcrawford.github.io/Portfolio/brain/), which reads these same files live (each is also served at `/brain/<path>.md` for agents to read).

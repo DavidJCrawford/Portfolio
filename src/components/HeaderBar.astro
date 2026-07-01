@@ -14,6 +14,14 @@ const isActive = (href: string) => pathname === href;
   <div class="bar-inner shell">
     <a class="wordmark unstyled" href={withBase()} data-text="DJC" aria-label="David J Crawford — home">DJC</a>
     <nav class="nav" aria-label="Primary">
+      <a
+        class="unstyled nav-link nav-brain"
+        href={withBase('brain')}
+        aria-current={pathname.replace(/\/$/, '').endsWith('/brain') ? 'page' : undefined}
+      >
+        Brain
+      </a>
+      <span class="nav-sep" aria-hidden="true"></span>
       {nav.map((item) => (
         <a class="unstyled nav-link" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
           {item.label}
@@ -87,7 +95,13 @@ const isActive = (href: string) => pathname === href;
   }
   .nav {
     display: flex;
+    align-items: center;
     gap: clamp(var(--space-3), 2vw, var(--space-5));
+  }
+  .nav-sep {
+    width: 1px;
+    height: 1.1em;
+    background: var(--on-black-soft);
   }
   .nav-link {
     font-family: var(--mono);
@@ -106,7 +120,7 @@ const isActive = (href: string) => pathname === href;
   }
   @media (max-width: 30rem) {
     .nav { gap: var(--space-3); }
-    .nav-link:nth-child(2) { display: none; } /* collapse one label on tiny screens */
+    .nav a.nav-link:nth-of-type(3) { display: none; } /* hide Projects (dupes Writing) on tiny screens */
   }
 </style>
 

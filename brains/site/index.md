@@ -6,7 +6,7 @@ okf_version: "0.1"
 
 An [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf) (OKF v0.1) bundle — the ideas behind this site, published so people and agents can understand its context. This is the `brains/site/` bundle; concepts are markdown files and relationships are ordinary markdown links. Other subjects live in sibling bundles under `brains/` — for instance, a brain that backs a specific article (see [ai-in-security](../ai-in-security/)). Implementation lives in the project's `spec.md` and `DESIGN.md`.
 
-Start with **[The Through-Line](./concepts/the-through-line.md)** — the single idea everything ladders up to — or **[David J Crawford](./people/david-j-crawford.md)** for who's behind it.
+Start with **[The Through-Line](./concepts/the-through-line.md)** — the single idea everything ladders up to — or **[David J Crawford](./people/david-j-crawford.md)** for who's behind it. This brain is also explorable as an interactive [node graph](./technical/brain-graph.md) at `/brain`.
 
 ## People
 
@@ -33,6 +33,7 @@ Start with **[The Through-Line](./concepts/the-through-line.md)** — the single
 
 - [Position the Landing Around Crafting Product](./decisions/position-the-landing-around-crafting-product.md)
 - [Publish the Brain Publicly](./decisions/publish-the-brain-publicly.md)
+- [Read the Brain Live](./decisions/read-the-brain-live.md)
 
 ## Technical
 
@@ -41,6 +42,6 @@ How the site is actually built — start with **[Architecture & Stack](./technic
 - **Foundations** — [Architecture & Stack](./technical/architecture.md) · [Design Tokens](./technical/design-tokens.md) · [Typography](./technical/typography.md) · [Block Layout](./technical/block-layout.md)
 - **Content** — [Content Model & Ordering](./technical/content-model.md)
 - **Interaction** — [Liquid Comet Cursor](./technical/liquid-cursor.md) · [Glitch Wordmark](./technical/glitch-wordmark.md) · [Progressive Enhancement & Accessibility](./technical/progressive-enhancement.md)
-- **Delivery** — [Deployment & Base Path](./technical/deployment.md) · [The Brain (OKF Bundle)](./technical/the-okf-brain.md)
+- **Delivery** — [Deployment & Base Path](./technical/deployment.md) · [The Brain (OKF Bundle)](./technical/the-okf-brain.md) · [The Brain Graph](./technical/brain-graph.md)
 
 Change history: [log.md](./log.md).

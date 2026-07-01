@@ -1,0 +1,899 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBrainGraph } from '../lib/brainGraph';
+
+// The graph is generated at build time from the /brains Markdown (see lib/brainGraph.ts),
+// baked into the page as JSON, and rendered client-side. Static — works on GitHub Pages.
+const graph = getBrainGraph();
+const order = ['Concept', 'Person', 'Technical Note', 'Situation', 'Decision'];
+const byType = order
+  .map((type) => ({ type, items: graph.nodes.filter((n) => n.type === type) }))
+  .filter((g) => g.items.length);
+---
+
+<BaseLayout title="Brain">
+  <section class="brain" data-cursor-dark>
+    <script is:inline>document.documentElement.classList.add('brain-js')</script>
+    <div class="brain-stage" id="stage">
+      <svg class="brain-svg" id="svg" aria-hidden="true">
+        <defs>
+          <filter id="brain-goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b" />
+            <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -8" />
+          </filter>
+        </defs>
+        <g class="vp" id="vp">
+          <g class="edges" id="edges"></g>
+          <g class="dots" id="dots"></g>
+          <g class="miniblobs" id="miniblobs" opacity="0"></g>
+          <g class="blob" id="blob" filter="url(#brain-goo)" opacity="0"></g>
+        </g>
+      </svg>
+      <div class="brain-label" id="label" hidden>
+        <span class="bl-title" id="bl-title"></span>
+        <span class="bl-type" id="bl-type"></span>
+      </div>
+      <p class="brain-hint" id="hint"><span class="hint-tap">tap a node</span>drag to pan<span class="hint-zoom"> · scroll to zoom</span></p>
+    </div>
+
+    <!-- No-JS / accessible fallback: the same notes, as a plain index. -->
+    <div class="brain-fallback">
+      <div class="shell">
+        {byType.map((g) => (
+          <section class="fb-group">
+            <h2>{g.type}</h2>
+            <ul>
+              {g.items.map((n) => (
+                <li><a href={n.href} rel="noopener">{n.title}</a></li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="drawer" data-cursor-light aria-hidden="true" aria-label="Note details" hidden>
+    <button class="drawer-close" id="drawer-close" aria-label="Close">✕</button>
+    <p class="drawer-type" id="d-type"></p>
+    <h2 class="drawer-title" id="d-title"></h2>
+    <p class="drawer-desc" id="d-desc"></p>
+    <div class="drawer-connected" id="d-connected"></div>
+    <a class="drawer-link" id="d-link" href="#" rel="noopener" target="_blank">View note on GitHub ↗</a>
+  </aside>
+
+  <script>
+    type N = { id: string; title: string; type: string; description: string; href: string; body: string };
+    type L = { source: string; target: string };
+
+    // The graph is read LIVE in the browser from the Markdown served under /brain/
+    // (copied there by scripts/sync-brain.mjs, listed in manifest.json). Add a note to
+    // brains/, rebuild/deploy, and the graph updates — no code changes.
+    const REPO = 'https://github.com/DavidJCrawford/Portfolio/blob/main/brains';
+    const fmVal = (fm: string, k: string) => {
+      const m = fm.match(new RegExp('^' + k + ':\\s*(.+)$', 'm'));
+      if (!m) return '';
+      let v = m[1].trim();
+      if ((v[0] === '"' && v.endsWith('"')) || (v[0] === "'" && v.endsWith("'"))) v = v.slice(1, -1);
+      return v;
+    };
+    const relatedLinks = (body: string) => {
+      const i = body.search(/^#\s+Related\s*$/m);
+      if (i < 0) return [] as string[];
+      let s = body.slice(i);
+      const n = s.slice(1).search(/^#\s+/m);
+      if (n !== -1) s = s.slice(0, n + 1);
+      return [...s.matchAll(/\]\((\.[^)]+?\.md)\)/g)].map((m) => m[1]);
+    };
+    const resolveRel = (dir: string, link: string) =>
+      new URL(link, 'http://x/' + (dir ? dir + '/' : '')).pathname.replace(/^\//, '');
+
+    // Minimal Markdown → HTML for the drawer body (the note format is simple and
+    // controlled: # headings, paragraphs, - / 1. lists, **bold**, *italic*, `code`,
+    // [links]). Relative .md links become in-drawer jumps to that node.
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const mdInline = (s: string, dir: string) => {
+      s = esc(s)
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+      return s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, label, url) => {
+        if (/^https?:/i.test(url)) return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+        if (/\.md$/i.test(url)) return `<a href="#" data-focus="${resolveRel(dir, url).replace(/\.md$/, '')}">${label}</a>`;
+        return label;
+      });
+    };
+    const mdToHtml = (md: string, dir: string) => {
+      const L = md.split('\n');
+      let html = '', i = 0;
+      while (i < L.length) {
+        const line = L[i];
+        if (!line.trim()) { i++; continue; }
+        const h = line.match(/^#{1,3}\s+(.+)$/);
+        if (h) { html += `<h4 class="dw-h">${esc(h[1])}</h4>`; i++; continue; }
+        if (/^\s*[-*]\s+/.test(line)) { html += '<ul>'; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) { html += `<li>${mdInline(L[i].replace(/^\s*[-*]\s+/, ''), dir)}</li>`; i++; } html += '</ul>'; continue; }
+        if (/^\s*\d+\.\s+/.test(line)) { html += '<ol>'; while (i < L.length && /^\s*\d+\.\s+/.test(L[i])) { html += `<li>${mdInline(L[i].replace(/^\s*\d+\.\s+/, ''), dir)}</li>`; i++; } html += '</ol>'; continue; }
+        const para: string[] = [line]; i++;
+        while (i < L.length && L[i].trim() && !/^#{1,3}\s/.test(L[i]) && !/^\s*[-*]\s/.test(L[i]) && !/^\s*\d+\.\s/.test(L[i])) { para.push(L[i]); i++; }
+        html += `<p>${mdInline(para.join(' '), dir)}</p>`;
+      }
+      return html;
+    };
+
+    async function loadGraph(): Promise<{ nodes: N[]; links: L[] }> {
+      const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '');
+      const manifest = await fetch(`${BASE}/brain/manifest.json`).then((r) => r.json());
+      const files: string[] = manifest.files || manifest;
+      // Resilient: a single failed fetch shouldn't drop the whole graph.
+      const settled = await Promise.allSettled(
+        files.map(async (f) => ({ f, text: await fetch(`${BASE}/brain/${f}`).then((r) => r.text()) }))
+      );
+      const docs = settled.filter((s) => s.status === 'fulfilled').map((s) => (s as PromiseFulfilledResult<{ f: string; text: string }>).value);
+      const idOf = (p: string) => p.replace(/\.md$/, '');
+      const nodes: N[] = [];
+      const ids = new Set<string>();
+      for (const { f, text } of docs) {
+        const fm = text.match(/^---\n([\s\S]*?)\n---/);
+        if (!fm) continue;
+        const type = fmVal(fm[1], 'type');
+        if (!type) continue; // skips reserved index.md / log.md (no type)
+        const id = idOf(f);
+        ids.add(id);
+        nodes.push({ id, title: fmVal(fm[1], 'title') || id, type, description: fmVal(fm[1], 'description'), href: `${REPO}/${f}`, body: text.slice(fm[0].length) });
+      }
+      const links: L[] = [];
+      const seen = new Set<string>();
+      for (const { f, text } of docs) {
+        const id = idOf(f);
+        if (!ids.has(id)) continue;
+        const dir = f.includes('/') ? f.slice(0, f.lastIndexOf('/')) : '';
+        const body = text.slice((text.match(/^---\n[\s\S]*?\n---/) || [''])[0].length);
+        for (const link of relatedLinks(body)) {
+          const target = idOf(resolveRel(dir, link));
+          if (!ids.has(target) || target === id) continue;
+          const key = [id, target].sort().join(' ');
+          if (seen.has(key)) continue;
+          seen.add(key);
+          links.push({ source: id, target });
+        }
+      }
+      nodes.sort((a, b) => a.id.localeCompare(b.id));
+      return { nodes, links };
+    }
+
+    let data: { nodes: N[]; links: L[] };
+    try {
+      data = await loadGraph();
+    } catch (err) {
+      // couldn't reach the Markdown — reveal the server-rendered index instead
+      document.documentElement.classList.remove('brain-js');
+      throw err;
+    }
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const stage = document.getElementById('stage')!;
+    const svg = document.getElementById('svg') as unknown as SVGSVGElement;
+    const vp = document.getElementById('vp') as unknown as SVGGElement;
+    const edgesG = document.getElementById('edges')!;
+    const dotsG = document.getElementById('dots')!;
+    const blobG = document.getElementById('blob')!;
+    const label = document.getElementById('label')!;
+    const blTitle = document.getElementById('bl-title')!;
+    const blType = document.getElementById('bl-type')!;
+
+    // --- model ---------------------------------------------------------------
+    type Node = N & { x: number; y: number; vx: number; vy: number; shown: boolean; pop: number; rank: number; dx: number; dy: number; dvx: number; dvy: number; el?: SVGGElement; dot?: SVGCircleElement };
+    const idx = new Map<string, number>();
+    const nodes: Node[] = data.nodes.map((n, i) => {
+      idx.set(n.id, i);
+      const a = (i / data.nodes.length) * Math.PI * 2;
+      const r = 180 + (i % 7) * 22;
+      return { ...n, x: Math.cos(a) * r, y: Math.sin(a) * r, vx: 0, vy: 0, shown: false, pop: 0, rank: 0, dx: 0, dy: 0, dvx: 0, dvy: 0 };
+    });
+    const links = data.links
+      .map((l) => ({ s: idx.get(l.source)!, t: idx.get(l.target)! }))
+      .filter((l) => l.s != null && l.t != null);
+    const neighbors = new Map<number, number[]>();
+    for (const l of links) {
+      (neighbors.get(l.s) ?? neighbors.set(l.s, []).get(l.s)!).push(l.t);
+      (neighbors.get(l.t) ?? neighbors.set(l.t, []).get(l.t)!).push(l.s);
+    }
+
+    // Intro: reveal nodes one at a time in BFS order from the highest-degree node
+    // (high-degree neighbours first), so each pops in next to something already shown.
+    const degOf = (i: number) => neighbors.get(i)?.length ?? 0;
+    const order: number[] = [];
+    const seenR = new Set<number>();
+    for (const s of [...nodes.keys()].sort((a, b) => degOf(b) - degOf(a))) {
+      if (seenR.has(s)) continue;
+      seenR.add(s);
+      const q = [s];
+      while (q.length) {
+        const u = q.shift()!;
+        order.push(u);
+        for (const v of (neighbors.get(u) ?? []).slice().sort((a, b) => degOf(b) - degOf(a))) {
+          if (!seenR.has(v)) { seenR.add(v); q.push(v); }
+        }
+      }
+    }
+    order.forEach((n, k) => { nodes[n].rank = k; });
+    let revealCount = 0, revealAcc = 0, autoFit = true;
+    const REVEAL_EVERY = 4;
+
+    // --- svg elements --------------------------------------------------------
+    const lineEls: SVGLineElement[] = links.map((l) => {
+      const ln = document.createElementNS(NS, 'line');
+      ln.setAttribute('class', 'edge');
+      edgesG.appendChild(ln);
+      return ln;
+    });
+    nodes.forEach((n, i) => {
+      const g = document.createElementNS(NS, 'g') as SVGGElement;
+      g.setAttribute('class', 'node');
+      const hit = document.createElementNS(NS, 'circle');
+      hit.setAttribute('r', '13');
+      hit.setAttribute('class', 'hit');
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('r', '5');
+      dot.setAttribute('class', 'dot');
+      g.append(hit, dot);
+      dotsG.appendChild(g);
+      n.el = g;
+      n.dot = dot;
+      bindNode(g, i);
+    });
+    const BLOBN = 7;
+    const blobCircles = Array.from({ length: BLOBN }, () => {
+      const c = document.createElementNS(NS, 'circle');
+      blobG.appendChild(c);
+      return c;
+    });
+    // Pool of small blobs for the connected neighbours (each is a little cluster
+    // of goo-fused circles, like the big blob but smaller).
+    const miniG = document.getElementById('miniblobs')!;
+    const MAXMINI = 28, MINI_N = 5;
+    // Each mini-blob gets its OWN filtered group so its goo filter region is just that
+    // little cluster — not the bounding box of every neighbour (which, when zoomed in,
+    // becomes a huge area to blur every frame and tanks performance).
+    const miniUnits = Array.from({ length: MAXMINI }, () => {
+      const g = document.createElementNS(NS, 'g');
+      g.setAttribute('filter', 'url(#brain-goo)');
+      miniG.appendChild(g);
+      const circles = Array.from({ length: MINI_N }, () => { const c = document.createElementNS(NS, 'circle'); g.appendChild(c); return c; });
+      return { g, circles };
+    });
+    let miniMap: number[] = [];
+
+    // --- view transform (pan / zoom) ----------------------------------------
+    let W = 0, H = 0, tx = 0, ty = 0, scale = 1;
+    const applyVP = () => vp.setAttribute('transform', `translate(${W / 2 + tx} ${H / 2 + ty}) scale(${scale})`);
+    const toModel = (sx: number, sy: number) => {
+      const r = svg.getBoundingClientRect();
+      return { x: (sx - r.left - W / 2 - tx) / scale, y: (sy - r.top - H / 2 - ty) / scale };
+    };
+    function resize() {
+      const r = stage.getBoundingClientRect();
+      W = r.width; H = r.height;
+      svg.setAttribute('width', String(W));
+      svg.setAttribute('height', String(H));
+      applyVP();
+    }
+
+    // --- force simulation ----------------------------------------------------
+    const REP = 4200, SPRING = 0.05, LINKLEN = 74, CENTER = 0.03, DAMP = 0.86, MAXV = 6;
+    let dragging = -1, hovered = -1, alpha = 0; // alpha = "heat"; forces scale with it and it cools each tick
+    let pmx = 0, pmy = 0, pointerOn = false; // pointer position in model space (for the cursor "bump")
+    function step() {
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        if (!a.shown) continue;
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          if (!b.shown) continue;
+          let dx = a.x - b.x, dy = a.y - b.y;
+          let d2 = dx * dx + dy * dy || 0.01;
+          const f = (REP / Math.max(d2, 120)) * alpha; // floor distance so overlaps don't explode
+          const d = Math.sqrt(d2);
+          const fx = (dx / d) * f, fy = (dy / d) * f;
+          a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
+        }
+      }
+      for (const l of links) {
+        const a = nodes[l.s], b = nodes[l.t];
+        if (!a.shown || !b.shown) continue;
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.hypot(dx, dy) || 0.01;
+        const f = (d - LINKLEN) * SPRING * alpha;
+        const fx = (dx / d) * f, fy = (dy / d) * f;
+        a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
+      }
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (!n.shown) continue;
+        n.vx -= n.x * CENTER * alpha; n.vy -= n.y * CENTER * alpha;
+        if (i === dragging || i === hovered) { n.vx = n.vy = 0; continue; }
+        n.vx *= DAMP; n.vy *= DAMP;
+        const sp = Math.hypot(n.vx, n.vy);
+        if (sp > MAXV) { n.vx = (n.vx / sp) * MAXV; n.vy = (n.vy / sp) * MAXV; }
+        n.x += n.vx; n.y += n.vy;
+      }
+      alpha *= 0.94; // cool down; reheated on reveal / drag
+    }
+
+    function fit() {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const n of nodes) { minX = Math.min(minX, n.x); minY = Math.min(minY, n.y); maxX = Math.max(maxX, n.x); maxY = Math.max(maxY, n.y); }
+      const gw = maxX - minX || 1, gh = maxY - minY || 1;
+      scale = Math.min(W / gw, H / gh) * 0.82;
+      scale = Math.max(0.2, Math.min(2.5, scale));
+      tx = -((minX + maxX) / 2) * scale;
+      ty = -((minY + maxY) / 2) * scale;
+      applyVP();
+    }
+
+    function revealNext() {
+      if (revealCount >= order.length) return;
+      const i = order[revealCount];
+      const n = nodes[i];
+      const nb = (neighbors.get(i) ?? []).find((j) => nodes[j].shown);
+      if (nb != null) { const m = nodes[nb]; n.x = m.x + (Math.random() - 0.5) * 24; n.y = m.y + (Math.random() - 0.5) * 24; }
+      else { n.x = (Math.random() - 0.5) * 30; n.y = (Math.random() - 0.5) * 30; }
+      n.vx = 0; n.vy = 0; n.shown = true; n.pop = 0;
+      alpha = Math.max(alpha, 0.38); // a gentle reheat so the new node settles in
+      revealCount++;
+    }
+
+    // Smoothly keep the shown graph framed as it grows (until the user pans/zooms).
+    function autofitStep() {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity, cnt = 0;
+      for (const n of nodes) { if (!n.shown) continue; cnt++; if (n.x < minX) minX = n.x; if (n.y < minY) minY = n.y; if (n.x > maxX) maxX = n.x; if (n.y > maxY) maxY = n.y; }
+      if (!cnt) return;
+      const gw = Math.max(1, maxX - minX), gh = Math.max(1, maxY - minY);
+      const ts = Math.max(0.2, Math.min(2.2, Math.min(W / (gw + 140), H / (gh + 140))));
+      const ttx = -((minX + maxX) / 2) * ts, tty = -((minY + maxY) / 2) * ts;
+      scale += (ts - scale) * 0.08; tx += (ttx - tx) * 0.08; ty += (tty - ty) * 0.08;
+      applyVP();
+    }
+
+    // Magnetic cursor: a per-node springy displacement (dx/dy). The pointer ATTRACTS
+    // nearby nodes (harder the closer it is — the "stick"), a captured/hovered node is
+    // held in place, and the home-spring flings it back with bounce once the cursor
+    // pulls away. Decoupled from the layout sim, so no global drift; off during focus.
+    function cursorStep() {
+      const CR = 52, ATTRACT = 1.4, K = 0.18, DD = 0.88, MAXD = 13;
+      const on = pointerOn && dragging < 0 && !panning && active < 0;
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (!n.shown) continue;
+        if (i === hovered) { n.dvx = 0; n.dvy = 0; continue; } // hold the captured spot while hovering
+        let ax = -n.dx * K, ay = -n.dy * K; // spring back toward home
+        if (on) {
+          const D = Math.hypot(pmx - n.x, pmy - n.y); // home → cursor distance
+          if (D < CR) {
+            const vx = pmx - (n.x + n.dx), vy = pmy - (n.y + n.dy), dd = Math.hypot(vx, vy) || 0.01;
+            let c = 1 - D / CR; c *= c; // capture ramp: stronger the closer the cursor
+            ax += (vx / dd) * ATTRACT * c; // pull toward the cursor
+            ay += (vy / dd) * ATTRACT * c;
+          }
+        }
+        n.dvx = (n.dvx + ax) * DD; n.dvy = (n.dvy + ay) * DD;
+        n.dx += n.dvx; n.dy += n.dvy;
+        const m = Math.hypot(n.dx, n.dy);
+        if (m > MAXD) { n.dx = (n.dx / m) * MAXD; n.dy = (n.dy / m) * MAXD; }
+      }
+    }
+
+    // --- render --------------------------------------------------------------
+    let active = -1, t = 0, p = 0, blobNode = -1, dimmed = false;
+    let focusNear: Set<number> | null = null;
+    let drawerNode = -1; // the node whose drawer is open — it stays activated while open
+    let pending = -1; // when switching nodes, the next node to open once the current has closed
+    let panToX: number | null = null, panToY: number | null = null; // eased recenter target
+
+    // Organic wobble: a small static lump offset per circle (so the rest shape is
+    // irregular, not a disc) plus two sine layers at incommensurate frequencies per
+    // axis (so it morphs rather than reading as a spinning oval). Slow on purpose.
+    function wob(seed: number, amp: number) {
+      const bx = Math.cos(seed * 2.3) * (0.9 + ((seed * 1.7) % 1.6));
+      const by = Math.sin(seed * 1.7) * (0.9 + ((seed * 1.3) % 1.4));
+      const ox = bx + amp * (Math.sin(t * 0.036 + seed * 3.1) * 0.6 + Math.sin(t * 0.02 + seed * 5.3) * 0.4);
+      const oy = by + amp * (Math.sin(t * 0.029 + seed * 4.2) * 0.6 + Math.cos(t * 0.044 + seed * 2.2) * 0.4);
+      return { ox, oy };
+    }
+    function render() {
+      const gx = (n: Node) => n.x + n.dx, gy = (n: Node) => n.y + n.dy; // displayed = layout + cursor bump
+      for (let i = 0; i < links.length; i++) {
+        const a = nodes[links[i].s], b = nodes[links[i].t];
+        const ln = lineEls[i];
+        const both = a.shown && b.shown;
+        ln.style.visibility = both ? 'visible' : 'hidden';
+        if (both) {
+          ln.setAttribute('x1', gx(a).toFixed(1)); ln.setAttribute('y1', gy(a).toFixed(1));
+          ln.setAttribute('x2', gx(b).toFixed(1)); ln.setAttribute('y2', gy(b).toFixed(1));
+        }
+      }
+      // pop-in: scale each node from 0 → 1 with a little overshoot as it's revealed
+      const eob = (x: number) => { const c1 = 1.70158, c3 = c1 + 1, y = x - 1; return 1 + c3 * y * y * y + c1 * y * y; };
+      for (const n of nodes) {
+        if (n.shown && n.pop < 1) n.pop = Math.min(1, n.pop + 0.16);
+        const s = n.shown ? eob(n.pop) : 0;
+        n.el!.setAttribute('transform', `translate(${gx(n).toFixed(1)} ${gy(n).toFixed(1)}) scale(${s.toFixed(3)})`);
+      }
+      // Staged open/close timeline driven by one master progress `p`:
+      //   stage 1 (p 0→0.5): the hovered node morphs into a blob
+      //   stage 2 (p ≈0.35): everything more than 1 link away dims
+      //   stage 3 (p 0.55→1): the connected neighbours morph into small blobs
+      // Running p backwards on mouse-off reverses the order for free.
+      const dir = active >= 0 ? 1 : -1;
+      p = Math.max(0, Math.min(1, p + dir * (reduce ? 1 : 0.028)));
+      if (blobNode >= 0) {
+        if (active < 0 && p <= 0.001) {
+          if (pending >= 0) {
+            const nx = pending; pending = -1; reallyActivate(nx); // old fully closed → open the new one
+          } else {
+            blobNode = -1; miniMap = []; focusNear = null;
+            if (dimmed) { clearDim(); dimmed = false; }
+            blobG.setAttribute('opacity', '0');
+            miniG.setAttribute('opacity', '0');
+            label.hidden = true;
+            nodes.forEach((nn) => { if (nn.dot) nn.dot.style.opacity = '1'; });
+          }
+        } else {
+          const smooth = (x: number) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
+          const mainAmt = smooth(p / 0.5);
+          const miniAmt = smooth((p - 0.55) / 0.45);
+          // stage 2 — dim toggle (the CSS transition does the fade)
+          if (!dimmed && active >= 0 && p > 0.35) { applyDim(); dimmed = true; }
+          else if (dimmed && p < 0.32) { clearDim(); dimmed = false; }
+
+          const n = nodes[blobNode];
+          const DOTR = 5; // base dot radius — the blob grows out from it
+          blobG.setAttribute('opacity', mainAmt.toFixed(3));
+          if (n.dot) n.dot.style.opacity = String(Math.max(0, 1 - mainAmt * 1.4));
+          for (let i = 0; i < BLOBN; i++) {
+            const w = reduce ? { ox: 0, oy: 0 } : wob(i * 1.3 + 0.5, 3 * mainAmt);
+            const c = blobCircles[i];
+            c.setAttribute('cx', (gx(n) + w.ox).toFixed(1));
+            c.setAttribute('cy', (gy(n) + w.oy).toFixed(1));
+            c.setAttribute('r', (DOTR + (9 - i * 0.4 - DOTR) * mainAmt).toFixed(2));
+          }
+          // stage 3 — small blobs for the connected (1-link) neighbours
+          miniG.setAttribute('opacity', miniAmt.toFixed(3));
+          for (let k = 0; k < miniMap.length; k++) {
+            const m = nodes[miniMap[k]];
+            if (m.dot) m.dot.style.opacity = String(Math.max(0, 1 - miniAmt * 1.4));
+            const cs = miniUnits[k].circles;
+            for (let c = 0; c < MINI_N; c++) {
+              const w = reduce ? { ox: 0, oy: 0 } : wob(k * 1.7 + c * 0.9 + 1.3, 1.5 * miniAmt);
+              const circ = cs[c];
+              circ.setAttribute('cx', (gx(m) + w.ox).toFixed(1));
+              circ.setAttribute('cy', (gy(m) + w.oy).toFixed(1));
+              circ.setAttribute('r', (DOTR + (5.2 - c * 0.4 - DOTR) * miniAmt).toFixed(2));
+            }
+          }
+          const r = svg.getBoundingClientRect();
+          const sx = gx(n) * scale + W / 2 + tx, sy = gy(n) * scale + H / 2 + ty;
+          label.style.left = r.left + sx + 'px';
+          label.style.top = r.top + sy + 13 * scale + 6 + 'px';
+          label.style.opacity = mainAmt.toFixed(3);
+        }
+      }
+    }
+
+    let running = true, rafId = 0;
+    function frame() {
+      rafId = 0;
+      if (!running) return;
+      // Idle-skip the heavy work (O(n²) sim + DOM writes + goo re-raster) when nothing
+      // is actually moving, so a settled graph doesn't burn a core at 60fps.
+      let disp = false;
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (n.shown && (Math.abs(n.dx) > 0.05 || Math.abs(n.dy) > 0.05 || n.pop < 1)) { disp = true; break; }
+      }
+      const animating = revealCount < order.length || alpha > 0.003 || active >= 0 || p > 0.001 || pending >= 0 || panToX !== null || pointerOn || disp;
+      if (animating) {
+        t++;
+        if (!reduce && revealCount < order.length && ++revealAcc >= REVEAL_EVERY) { revealAcc = 0; revealNext(); }
+        if (!reduce) step();
+        if (!reduce) cursorStep();
+        if (autoFit) autofitStep();
+        if (panToX !== null) {
+          tx += (panToX - tx) * 0.12; ty += (panToY! - ty) * 0.12; applyVP();
+          if (Math.abs(panToX - tx) < 0.4 && Math.abs(panToY! - ty) < 0.4) { panToX = panToY = null; }
+        }
+        render();
+      }
+      rafId = requestAnimationFrame(frame);
+    }
+    const loop = () => { if (!rafId) rafId = requestAnimationFrame(frame); }; // single-loop guard
+
+    // --- interactions --------------------------------------------------------
+    // The comet cursor fades out while the pointer rests on a node (250ms) so it
+    // doesn't compete with the node's own blob; it returns on leave.
+    const comet = document.querySelector('.cursor') as HTMLElement | null;
+    const hideComet = () => { if (comet) { comet.style.transition = 'opacity 180ms var(--ease)'; comet.style.opacity = '0'; } };
+    const showComet = () => { if (comet) comet.style.opacity = ''; };
+
+    let hoverTimer = 0, cometTimer = 0;
+    function applyDim() {
+      const near = focusNear;
+      if (!near) return;
+      nodes.forEach((nn, j) => nn.el!.classList.toggle('dim', !near.has(j)));
+      links.forEach((l, k) => lineEls[k].classList.toggle('dim', l.s !== active && l.t !== active));
+    }
+    function clearDim() {
+      nodes.forEach((nn) => nn.el!.classList.remove('dim'));
+      lineEls.forEach((ln) => ln.classList.remove('dim'));
+    }
+    function activate(i: number) {
+      if (active === i) return;
+      // if another node is already open, hand off smoothly: close it first (p → 0),
+      // then the render loop opens `pending`. Otherwise open straight away.
+      if (active >= 0 && active !== i && p > 0.05) { pending = i; active = -1; return; }
+      reallyActivate(i);
+    }
+    function reallyActivate(i: number) {
+      pending = -1; // a direct open supersedes any queued switch
+      if (blobNode >= 0 && blobNode !== i && nodes[blobNode]?.dot) nodes[blobNode].dot.style.opacity = '1';
+      active = i; blobNode = i;
+      const n = nodes[i];
+      blTitle.textContent = n.title;
+      blType.textContent = n.type;
+      label.hidden = false;
+      focusNear = new Set([i, ...(neighbors.get(i) ?? [])]);
+      miniMap = (neighbors.get(i) ?? []).slice(0, MAXMINI);
+      miniUnits.forEach((u, k) => { if (k >= miniMap.length) u.circles.forEach((c) => c.setAttribute('r', '0')); });
+      nodes.forEach((nn) => { if (nn.dot) nn.dot.style.opacity = '1'; });
+      if (dimmed) applyDim();
+    }
+    function deactivate() {
+      active = -1; // p descends in the render loop, reversing the stages in order
+    }
+
+    function bindNode(g: SVGGElement, i: number) {
+      let downAt = 0, moved = false, sx = 0, sy = 0;
+      g.addEventListener('pointerenter', () => {
+        if (drawerNode >= 0) return; // drawer owns the active state while open
+        clearTimeout(hoverTimer);
+        clearTimeout(cometTimer);
+        hovered = i; // pin so the node doesn't drift out from under the pointer
+        cometTimer = window.setTimeout(hideComet, 250);
+        hoverTimer = window.setTimeout(() => activate(i), 500);
+        g.classList.add('is-hover');
+      });
+      g.addEventListener('pointerleave', () => {
+        clearTimeout(hoverTimer);
+        clearTimeout(cometTimer);
+        if (hovered === i) hovered = -1;
+        showComet();
+        g.classList.remove('is-hover');
+        if (active === i && dragging !== i && drawerNode < 0) deactivate();
+      });
+      g.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        try { (e.target as Element).setPointerCapture?.(e.pointerId); } catch {}
+        autoFit = false; panToX = panToY = null;
+        dragging = i; downAt = performance.now(); moved = false; sx = e.clientX; sy = e.clientY;
+      });
+      g.addEventListener('pointermove', (e) => {
+        if (dragging !== i) return;
+        if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 4) moved = true;
+        const m = toModel(e.clientX, e.clientY);
+        nodes[i].x = m.x; nodes[i].y = m.y; nodes[i].vx = nodes[i].vy = 0;
+        alpha = Math.max(alpha, 0.4); // let neighbours respond while dragging
+      });
+      g.addEventListener('pointerup', (e) => {
+        if (dragging === i && !moved && performance.now() - downAt < 350) openDrawer(i);
+        dragging = -1;
+      });
+    }
+
+    // track the pointer in model space for the cursor bump (fires over nodes too, since it bubbles)
+    svg.addEventListener('pointermove', (e) => { const m = toModel(e.clientX, e.clientY); pmx = m.x; pmy = m.y; pointerOn = true; }, { passive: true });
+    svg.addEventListener('pointerleave', () => { pointerOn = false; }, { passive: true });
+
+    // background pan + wheel zoom
+    let panning = false, px = 0, py = 0;
+    svg.addEventListener('pointerdown', (e) => { panning = true; autoFit = false; panToX = panToY = null; px = e.clientX; py = e.clientY; });
+    window.addEventListener('pointermove', (e) => {
+      if (!panning) return;
+      tx += e.clientX - px; ty += e.clientY - py; px = e.clientX; py = e.clientY; applyVP();
+    });
+    window.addEventListener('pointerup', () => { panning = false; });
+    svg.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        autoFit = false; panToX = panToY = null;
+        const r = svg.getBoundingClientRect();
+        const mx = e.clientX - r.left - W / 2, my = e.clientY - r.top - H / 2;
+        const k = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+        const ns = Math.max(0.2, Math.min(4, scale * k));
+        tx = mx - ((mx - tx) * ns) / scale;
+        ty = my - ((my - ty) * ns) / scale;
+        scale = ns; applyVP();
+      },
+      { passive: false }
+    );
+
+    // --- drawer --------------------------------------------------------------
+    const scrim = document.getElementById('scrim')!;
+    const drawer = document.getElementById('drawer')!;
+    const dType = document.getElementById('d-type')!;
+    const dTitle = document.getElementById('d-title')!;
+    const dDesc = document.getElementById('d-desc')!;
+    const dConnected = document.getElementById('d-connected')!;
+    const dLink = document.getElementById('d-link') as HTMLAnchorElement;
+    dDesc.addEventListener('click', (e) => {
+      const a = (e.target as HTMLElement).closest('[data-focus]');
+      if (!a) return;
+      e.preventDefault();
+      const j = idx.get(a.getAttribute('data-focus')!);
+      if (j != null) focusNode(j);
+    });
+    function openDrawer(i: number) {
+      drawerNode = i;
+      activate(i); // give the node its hover appearance (blob + label + focus dim) while open
+      const n = nodes[i];
+      dType.textContent = n.type;
+      dTitle.textContent = n.title;
+      // render the note's own Markdown body (minus its Related section — the chips cover that)
+      const raw = n.body || '';
+      const ri = raw.search(/^#\s+Related\s*$/m);
+      const body = (ri >= 0 ? raw.slice(0, ri) : raw).trim();
+      const dir = n.id.includes('/') ? n.id.slice(0, n.id.lastIndexOf('/')) : '';
+      dDesc.innerHTML = body ? mdToHtml(body, dir) : esc(n.description || '');
+      dLink.href = n.href;
+      dConnected.innerHTML = '';
+      const nb = [...new Set(neighbors.get(i) ?? [])];
+      if (nb.length) {
+        const h = document.createElement('p');
+        h.className = 'dc-head';
+        h.textContent = `Connected (${nb.length})`;
+        dConnected.appendChild(h);
+        const wrap = document.createElement('div');
+        wrap.className = 'dc-chips';
+        for (const j of nb) {
+          const b = document.createElement('button');
+          b.className = 'dc-chip';
+          b.textContent = nodes[j].title;
+          b.addEventListener('click', () => focusNode(j));
+          wrap.appendChild(b);
+        }
+        dConnected.appendChild(wrap);
+      }
+      drawer.hidden = false; scrim.hidden = false;
+      requestAnimationFrame(() => { drawer.classList.add('open'); scrim.classList.add('open'); });
+      drawer.setAttribute('aria-hidden', 'false');
+    }
+    function closeDrawer() {
+      drawerNode = -1;
+      pending = -1; // don't let a queued switch pop open after closing
+      deactivate(); // release the node's hover appearance
+      drawer.classList.remove('open'); scrim.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      setTimeout(() => { drawer.hidden = true; scrim.hidden = true; }, 260);
+    }
+    function focusNode(i: number) {
+      autoFit = false;
+      const n = nodes[i];
+      panToX = -n.x * scale; panToY = -n.y * scale; // eased in the frame loop (not a jump)
+      openDrawer(i);
+    }
+    document.getElementById('drawer-close')!.addEventListener('click', closeDrawer);
+    scrim.addEventListener('click', closeDrawer);
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+    // --- boot ----------------------------------------------------------------
+    resize();
+    if (reduce) {
+      // no intro animation: reveal all, settle, and frame once
+      while (revealCount < order.length) revealNext();
+      nodes.forEach((n) => { n.pop = 1; });
+      for (let i = 0; i < 320; i++) { alpha = 1; step(); } // hold full heat to settle statically
+      fit();
+      autoFit = false;
+    } else {
+      revealNext(); // first node; the rest pop in over the intro
+    }
+    loop();
+    window.addEventListener('resize', resize, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running) loop();
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  /* The graph lives on a dark canvas so the accent nodes/lines and white hover
+     labels read the way the brief calls for; the rest of the site stays light. */
+  .brain {
+    --stage: #0b0b0e;
+    background: var(--stage);
+    color: var(--on-black);
+    position: relative;
+  }
+  .brain-stage {
+    display: none; /* shown once the graph boots (.brain-js); no-JS gets the fallback */
+    position: relative;
+    height: calc(100dvh - var(--bar-h));
+    min-height: 30rem;
+    overflow: hidden;
+    touch-action: none;
+  }
+  :global(.brain-js) .brain-stage { display: block; }
+  .brain-svg { display: block; width: 100%; height: 100%; cursor: grab; }
+  .brain-svg:active { cursor: grabbing; }
+
+  .brain-label {
+    position: fixed;
+    z-index: 4;
+    transform: translate(-50%, 0);
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .bl-title {
+    display: block;
+    color: #fff;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+  }
+  .bl-type {
+    display: block;
+    margin-top: 2px;
+    color: #fff;
+    opacity: 0.72;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.7rem;
+  }
+  .brain-hint {
+    position: absolute;
+    z-index: 3;
+    bottom: var(--space-3);
+    right: var(--gutter);
+    margin: 0;
+    font-family: var(--mono);
+    font-size: var(--fs-label);
+    letter-spacing: 0.08em;
+    color: var(--on-black-soft);
+    pointer-events: none;
+  }
+  /* Touch has no wheel/pinch zoom here — swap "scroll to zoom" for "tap a node". */
+  .brain-hint .hint-tap { display: none; }
+  @media (hover: none), (pointer: coarse) {
+    .brain-hint .hint-tap { display: inline; }
+    .brain-hint .hint-tap::after { content: ' · '; }
+    .brain-hint .hint-zoom { display: none; }
+  }
+
+  /* Fallback index — shown for no-JS; hidden once the graph boots (.brain-js). */
+  .brain-fallback { display: block; background: var(--stage); padding-block: var(--space-6) var(--space-7); }
+  :global(.brain-js) .brain-fallback { display: none; }
+  .brain-fallback .shell { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--space-5); }
+  .fb-group h2 { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--fs-label); color: var(--accent); }
+  .fb-group ul { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: 0.35rem; }
+  .fb-group a { color: var(--on-black); text-decoration: none; border-bottom: 1px solid transparent; }
+  .fb-group a:hover { border-bottom-color: var(--accent); }
+
+  /* --- Drawer -------------------------------------------------------------- */
+  .scrim {
+    position: fixed; inset: 0; z-index: 60;
+    background: rgba(11, 11, 14, 0.5);
+    opacity: 0; transition: opacity 240ms var(--ease);
+  }
+  .scrim.open { opacity: 1; }
+  .drawer {
+    position: fixed; top: 0; right: 0; z-index: 61;
+    height: 100dvh; width: min(28rem, 92vw);
+    background: var(--paper);
+    color: var(--ink);
+    border-left: 1px solid var(--rule);
+    box-shadow: -12px 0 40px rgba(11, 11, 14, 0.18);
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 260ms var(--ease);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-close {
+    position: absolute; top: var(--space-3); right: var(--space-3);
+    border: 0; background: none; cursor: pointer;
+    font-size: 1rem; color: var(--ink-soft); padding: var(--space-1);
+  }
+  .drawer-close:hover { color: var(--accent); }
+  .drawer-type { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--fs-label); color: var(--accent); margin: 0; }
+  .drawer-title { font-family: var(--display); font-weight: 700; font-size: var(--fs-h2); line-height: 1.1; margin: var(--space-2) 0 var(--space-3); }
+  .drawer-desc { font-family: var(--serif); font-size: var(--fs-body); line-height: 1.55; color: var(--ink); margin: 0 0 var(--space-4); }
+  .drawer-link {
+    display: inline-block; font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: 0.1em; font-size: var(--fs-label); color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent); padding-bottom: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scrim, .drawer { transition: none; }
+  }
+</style>
+
+<!-- The edges/nodes/blob circles are created at runtime (in the script), so they
+     don't carry Astro's scoped-style attribute — style them globally, namespaced
+     under .brain so nothing leaks to other pages. -->
+<style is:global>
+  .brain .edge {
+    stroke: var(--accent);
+    stroke-opacity: 0.22;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition: stroke-opacity 220ms var(--ease);
+  }
+  /* Focus mode: while a node is active, everything >1 link away is dimmed. */
+  .brain .edge.dim { stroke-opacity: 0.06; }
+  .brain .node { cursor: pointer; transition: opacity 220ms var(--ease); }
+  .brain .node.dim { opacity: 0.5; }
+  @media (prefers-reduced-motion: reduce) {
+    .brain .edge, .brain .node { transition: none; }
+  }
+  /* pointer-events:all makes the invisible hit area a reliable target even with a
+     transparent fill — Safari's default (visiblePainted) otherwise misses it. */
+  .brain .hit { fill: transparent; pointer-events: all; }
+  .brain .dot {
+    fill: var(--accent);
+    stroke: #0b0b0e;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    transition: fill 160ms ease;
+  }
+  .brain .node.is-hover .dot { fill: #ff6a55; }
+  /* The blob sits on top of the hovered node; keep it pointer-transparent so the
+     hit circle underneath keeps the hover (otherwise the blob triggers pointerleave
+     and the node flickers off). */
+  .brain #blob { pointer-events: none; }
+  .brain #blob circle { fill: var(--accent); pointer-events: none; }
+  .brain #miniblobs, .brain #miniblobs circle { fill: var(--accent); pointer-events: none; }
+
+  /* Drawer body rendered from Markdown at runtime (so its elements have no scope attr). */
+  .drawer-desc h4.dw-h { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: var(--fs-label); color: var(--ink-soft); margin: var(--space-4) 0 var(--space-2); }
+  .drawer-desc h4.dw-h:first-child { margin-top: 0; }
+  .drawer-desc p { margin: 0 0 var(--space-3); }
+  .drawer-desc ul, .drawer-desc ol { margin: 0 0 var(--space-3); padding-left: 1.2em; }
+  .drawer-desc li { margin-bottom: 0.4rem; }
+  .drawer-desc a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(255, 75, 51, 0.35); cursor: pointer; }
+  .drawer-desc a:hover { border-bottom-color: var(--accent); }
+  .drawer-desc code { font-family: var(--mono); font-size: 0.85em; background: rgba(26, 26, 24, 0.06); padding: 0.05em 0.32em; border-radius: 3px; }
+  .drawer-desc strong { font-weight: 700; }
+  .drawer-desc em { font-style: italic; }
+
+  /* Connected chips are built at runtime (no scope attr), so style them here. */
+  .drawer .dc-head { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: var(--fs-label); color: var(--ink-soft); margin: 0 0 var(--space-2); }
+  .drawer .dc-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: var(--space-5); }
+  .drawer .dc-chip {
+    border: 1px solid var(--rule-strong); background: none; cursor: pointer;
+    border-radius: 999px; padding: 0.28rem 0.7rem;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--ink);
+    transition: border-color 160ms var(--ease), color 160ms var(--ease), background-color 160ms var(--ease), transform 160ms var(--ease);
+  }
+  .drawer .dc-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background-color: rgba(255, 75, 51, 0.08);
+    transform: translateY(-1px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .drawer .dc-chip { transition: none; }
+    .drawer .dc-chip:hover { transform: none; }
+  }
+
+  /* Lock the brain page to a single viewport once the graph is up: no scroll, no
+     footer. (No-JS keeps the scrollable fallback list + footer.) */
+  html.brain-js, html.brain-js body { height: 100%; overflow: hidden; }
+  html.brain-js .foot { display: none; }
+</style>

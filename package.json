@@ -7,6 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "sync-brain": "node scripts/sync-brain.mjs",
     "astro": "astro"
   },
   "dependencies": {

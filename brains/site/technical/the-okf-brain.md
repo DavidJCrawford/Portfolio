@@ -14,12 +14,17 @@ This site brain — the `brains/site/` bundle — is itself a technical artefact
 
 It's the project's own instance of [knowledge as leverage](../concepts/knowledge-as-leverage.md): a portable, public context source that both people and agents can read to understand how the project thinks. Publishing it is a [deliberate decision](../decisions/publish-the-brain-publicly.md), with third-party PII and employer-roadmap specifics kept out.
 
+# Served and visualised
+
+Every note is also served at its own URL (`/brain/<path>.md`) so an agent can fetch the raw source, and the whole bundle is rendered live as an interactive [node graph](./brain-graph.md) at `/brain` — the graph reads the same files, so it never drifts from the source.
+
 # Core idea
 
 The knowledge that drives the work, written in a portable format and shipped alongside it.
 
 # Related
 
+- [The Brain Graph](./brain-graph.md)
 - [Knowledge as Leverage](../concepts/knowledge-as-leverage.md)
 - [Publish the Brain Publicly](../decisions/publish-the-brain-publicly.md)
 - [Portfolio Site](../situations/portfolio-site.md)
