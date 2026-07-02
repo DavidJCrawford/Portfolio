@@ -32,9 +32,15 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
   }
   .cursor__svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
-  /* No follower for touch / coarse pointers or reduced-motion users. */
-  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  /* No follower for reduced-motion users, ever. */
+  @media (prefers-reduced-motion: reduce) {
     .cursor { display: none !important; }
+  }
+  /* No follower for touch / coarse pointers either — except while a touch drag is
+     live on an opt-in surface ([data-touch-comet], e.g. the brain graph), where the
+     finger drives the same comet as the desktop cursor (.touching, set by JS). */
+  @media (hover: none), (pointer: coarse) {
+    .cursor:not(.touching) { display: none !important; }
   }
 </style>
 
@@ -42,9 +48,12 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const root = document.querySelector('.cursor');
+  // An opt-in surface (e.g. the brain graph) where a touch drag drives the comet —
+  // the finger plays the cursor while it's on the surface.
+  const touchHost = document.querySelector('[data-touch-comet]');
 
-  if (root && fine && !reduce) {
-    root.hidden = false;
+  if (root && !reduce && (fine || touchHost)) {
+    if (fine) root.hidden = false;
     const circles = Array.from(root.querySelectorAll('circle'));
     const g = root.querySelector('.cursor__blobs');
     const N = circles.length;
@@ -81,7 +90,7 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
       if (s) { const [a, b] = s.split(',').map(Number); if (isFinite(a) && isFinite(b)) { mx = a; my = b; } }
     } catch {}
     const pts = circles.map(() => ({ x: mx, y: my }));
-    let t = 0, running = true;
+    let t = 0, running = fine, touching = false;
     let lastMove = performance.now(); // when the pointer last moved
     let caught = 0;                   // eased: 0 = black comet, 1 = #FF4B33 blob
 
@@ -90,9 +99,38 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
     addEventListener('pointerdown', onMove, { passive: true });
     addEventListener('pagehide', () => { try { sessionStorage.setItem('djc-cursor', mx + ',' + my); } catch {} }, { passive: true });
     document.addEventListener('visibilitychange', () => {
-      running = !document.hidden;
+      running = !document.hidden && (fine || touching);
       if (running) requestAnimationFrame(frame);
     });
+
+    // Touch mode: while a finger drags on the opt-in surface, it drives the comet.
+    // On touch-only devices the frame loop runs only for the drag's duration.
+    if (touchHost) {
+      let touchId = -1;
+      touchHost.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'touch' || touchId >= 0) return; // first finger only
+        touchId = e.pointerId;
+        mx = e.clientX; my = e.clientY; lastMove = performance.now();
+        for (const p of pts) { p.x = mx; p.y = my; } // start at the finger, not across the screen
+        measure();
+        root.hidden = false;
+        root.classList.add('touching');
+        if (!running) { running = true; requestAnimationFrame(frame); }
+        touching = true;
+      }, { passive: true });
+      addEventListener('pointermove', (e) => {
+        if (touchId < 0 || e.pointerId !== touchId) return;
+        mx = e.clientX; my = e.clientY; lastMove = performance.now();
+      }, { passive: true });
+      const end = (e) => {
+        if (touchId < 0 || e.pointerId !== touchId) return;
+        touchId = -1; touching = false;
+        root.classList.remove('touching');
+        if (!fine) running = false; // stop the loop on touch-only devices
+      };
+      addEventListener('pointerup', end, { passive: true });
+      addEventListener('pointercancel', end, { passive: true });
+    }
 
     function frame() {
       if (!running) return;
@@ -148,6 +186,6 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
       }
       requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+    if (running) requestAnimationFrame(frame); // touch-only devices start on first drag
   }
 </script>

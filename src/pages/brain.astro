@@ -14,7 +14,7 @@ const byType = order
 <BaseLayout title="Brain">
   <section class="brain" data-cursor-dark>
     <script is:inline>document.documentElement.classList.add('brain-js')</script>
-    <div class="brain-stage" id="stage">
+    <div class="brain-stage" id="stage" data-touch-comet>
       <svg class="brain-svg" id="svg" aria-hidden="true">
         <defs>
           <filter id="brain-goo">
@@ -33,7 +33,7 @@ const byType = order
         <span class="bl-title" id="bl-title"></span>
         <span class="bl-type" id="bl-type"></span>
       </div>
-      <p class="brain-hint" id="hint"><span class="hint-tap">tap a node</span>drag to pan<span class="hint-zoom"> · scroll to zoom</span></p>
+      <p class="brain-hint" id="hint"><span class="hint-touch">drag to explore · release on a node to open</span><span class="hint-mouse">drag to pan<span class="hint-zoom"> · scroll to zoom</span></span></p>
     </div>
 
     <!-- No-JS / accessible fallback: the same notes, as a plain index. -->
@@ -553,9 +553,13 @@ const byType = order
       active = -1; // p descends in the render loop, reversing the stages in order
     }
 
+    // Mouse (and pen) only — touch never reaches these; it's driven at the stage
+    // level (see "touch: drag-to-explore" below) so the finger can sweep across
+    // nodes without any element capturing the pointer.
     function bindNode(g: SVGGElement, i: number) {
       let downAt = 0, moved = false, sx = 0, sy = 0;
-      g.addEventListener('pointerenter', () => {
+      g.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'touch') return;
         if (drawerNode >= 0) return; // drawer owns the active state while open
         clearTimeout(hoverTimer);
         clearTimeout(cometTimer);
@@ -564,7 +568,8 @@ const byType = order
         hoverTimer = window.setTimeout(() => activate(i), 500);
         g.classList.add('is-hover');
       });
-      g.addEventListener('pointerleave', () => {
+      g.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'touch') return;
         clearTimeout(hoverTimer);
         clearTimeout(cometTimer);
         if (hovered === i) hovered = -1;
@@ -573,12 +578,14 @@ const byType = order
         if (active === i && dragging !== i && drawerNode < 0) deactivate();
       });
       g.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'touch') return;
         e.stopPropagation();
         try { (e.target as Element).setPointerCapture?.(e.pointerId); } catch {}
         autoFit = false; panToX = panToY = null;
         dragging = i; downAt = performance.now(); moved = false; sx = e.clientX; sy = e.clientY;
       });
       g.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
         if (dragging !== i) return;
         if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 4) moved = true;
         const m = toModel(e.clientX, e.clientY);
@@ -586,6 +593,7 @@ const byType = order
         alpha = Math.max(alpha, 0.4); // let neighbours respond while dragging
       });
       g.addEventListener('pointerup', (e) => {
+        if (e.pointerType === 'touch') return;
         if (dragging === i && !moved && performance.now() - downAt < 350) openDrawer(i);
         dragging = -1;
       });
@@ -595,9 +603,9 @@ const byType = order
     svg.addEventListener('pointermove', (e) => { const m = toModel(e.clientX, e.clientY); pmx = m.x; pmy = m.y; pointerOn = true; }, { passive: true });
     svg.addEventListener('pointerleave', () => { pointerOn = false; }, { passive: true });
 
-    // background pan + wheel zoom
+    // background pan + wheel zoom — mouse/pen only; touch explores instead of panning
     let panning = false, px = 0, py = 0;
-    svg.addEventListener('pointerdown', (e) => { panning = true; autoFit = false; panToX = panToY = null; px = e.clientX; py = e.clientY; });
+    svg.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') return; panning = true; autoFit = false; panToX = panToY = null; px = e.clientX; py = e.clientY; });
     window.addEventListener('pointermove', (e) => {
       if (!panning) return;
       tx += e.clientX - px; ty += e.clientY - py; px = e.clientX; py = e.clientY; applyVP();
@@ -618,6 +626,66 @@ const byType = order
       },
       { passive: false }
     );
+
+    // --- touch: drag-to-explore ----------------------------------------------
+    // On touch the finger plays the desktop cursor. No panning — dragging runs
+    // the same magnetic wobble + comet (Cursor.astro's [data-touch-comet] mode),
+    // the node under the finger highlights and shows its name (the staged blob +
+    // label via activate), and releasing over that node opens the drawer.
+    // Guarded per-event by pointerType so hybrid devices keep both modes.
+    let touchId = -1, touchHover = -1;
+    const TOUCH_HIT = 32; // generous screen-px radius — fingers are blunter than cursors
+    function touchNodeAt(cx: number, cy: number): number {
+      const m = toModel(cx, cy);
+      let best = -1, bd = TOUCH_HIT / scale;
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (!n.shown) continue;
+        const d = Math.hypot(m.x - (n.x + n.dx), m.y - (n.y + n.dy));
+        if (d < bd) { bd = d; best = i; }
+      }
+      return best;
+    }
+    function touchHoverSet(i: number) {
+      if (touchHover === i) return;
+      if (touchHover >= 0) {
+        nodes[touchHover].el!.classList.remove('is-hover');
+        if (hovered === touchHover) hovered = -1;
+      }
+      touchHover = i;
+      if (i >= 0) {
+        hovered = i; // pin it, as desktop hover does
+        nodes[i].el!.classList.add('is-hover');
+        clearTimeout(cometTimer);
+        cometTimer = window.setTimeout(hideComet, 250);
+        if (drawerNode < 0) activate(i); // no dwell delay — show the name right away
+      } else {
+        pending = -1; // a queued handoff mustn't pop open after the finger has left
+        if (active >= 0 && drawerNode < 0) deactivate();
+        showComet();
+      }
+    }
+    svg.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch' || touchId >= 0) return; // first finger only
+      touchId = e.pointerId;
+      const m = toModel(e.clientX, e.clientY);
+      pmx = m.x; pmy = m.y; pointerOn = true;
+      touchHoverSet(touchNodeAt(e.clientX, e.clientY));
+    });
+    svg.addEventListener('pointermove', (e) => {
+      if (touchId < 0 || e.pointerId !== touchId) return;
+      touchHoverSet(touchNodeAt(e.clientX, e.clientY));
+    });
+    const touchEnd = (e: PointerEvent) => {
+      if (touchId < 0 || e.pointerId !== touchId) return;
+      touchId = -1;
+      const sel = e.type === 'pointerup' ? touchHover : -1; // release over a node selects it
+      if (sel >= 0) openDrawer(sel); // before the reset, so drawerNode guards deactivate
+      touchHoverSet(-1);
+      pointerOn = false;
+    };
+    svg.addEventListener('pointerup', touchEnd);
+    svg.addEventListener('pointercancel', touchEnd);
 
     // --- drawer --------------------------------------------------------------
     const scrim = document.getElementById('scrim')!;
@@ -724,6 +792,10 @@ const byType = order
     min-height: 30rem;
     overflow: hidden;
     touch-action: none;
+    /* a touch drag is interaction, not selection — no callout/select while exploring */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
   :global(.brain-js) .brain-stage { display: block; }
   .brain-svg { display: block; width: 100%; height: 100%; cursor: grab; }
@@ -767,12 +839,12 @@ const byType = order
     color: var(--on-black-soft);
     pointer-events: none;
   }
-  /* Touch has no wheel/pinch zoom here — swap "scroll to zoom" for "tap a node". */
-  .brain-hint .hint-tap { display: none; }
+  /* Touch: the finger drives the same hover experience as the desktop cursor —
+     drag to explore, release on a node to open it. No pan/zoom on touch. */
+  .brain-hint .hint-touch { display: none; }
   @media (hover: none), (pointer: coarse) {
-    .brain-hint .hint-tap { display: inline; }
-    .brain-hint .hint-tap::after { content: ' · '; }
-    .brain-hint .hint-zoom { display: none; }
+    .brain-hint .hint-touch { display: inline; }
+    .brain-hint .hint-mouse { display: none; }
   }
 
   /* Fallback index — shown for no-JS; hidden once the graph boots (.brain-js). */
