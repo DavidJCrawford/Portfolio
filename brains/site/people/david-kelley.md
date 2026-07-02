@@ -12,7 +12,7 @@ Founder of IDEO and of the Stanford d.school (Hasso Plattner Institute of Design
 
 # Key idea
 
-Human-centred design starts from empathy for the people you're designing for, and *creative confidence* is a capability anyone can build, not a gift a few are born with.
+Human-centred design starts from empathy for the people you're designing for, and *creative confidence* is a capability anyone can build, not a gift a few are born with. It is the stance behind this site’s prototype-first bias: build to think.
 
 # Related
 

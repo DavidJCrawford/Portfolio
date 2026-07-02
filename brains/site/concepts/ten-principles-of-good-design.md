@@ -38,5 +38,3 @@ Ten tests for good design, ending where restraint lives: as little design as pos
 
 - [Dieter Rams](../people/dieter-rams.md)
 - [Less, but Better](./less-but-better.md)
-- [Product](./product.md)
-- [Curation](./curation.md)

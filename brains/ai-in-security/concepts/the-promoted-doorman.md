@@ -16,7 +16,7 @@ It removes the drudgery — the alarm triage, the log-trawling, the swivel-chair
 
 # Core idea
 
-Automation promotes the human from drudgery to judgement.
+Automation promotes the human from drudgery to judgement. Explored at length in [The Right People, at the Right Time](https://davidjcrawford.github.io/Portfolio/writing/the-right-people-at-the-right-time/).
 
 # Related
 

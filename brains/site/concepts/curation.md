@@ -12,7 +12,7 @@ Once a model can generate many credible variants on demand, the bottleneck moves
 
 # A real discipline
 
-Curation isn’t “just taste.” It’s a serious, formal practice (there are postgraduate programmes in curatorial practice). In an AI-heavy workflow it reframes what a senior designer is: not the person who produces the most, but the one who reliably chooses the right direction, for the right reasons, while keeping the [product](./product.md) coherent over time.
+Curation isn’t “just taste.” It’s a serious, formal practice (there are postgraduate programmes in curatorial practice). In an AI-heavy workflow it reframes what a senior designer is: not the person who produces the most, but the one who reliably chooses the right direction, for the right reasons, while keeping the [product](./product.md) coherent over time. The practice this implies — prototype-first, curation-led — is [from painting to sculpting](./from-painting-to-sculpting.md), explored at length in [the article of that name](https://davidjcrawford.github.io/Portfolio/writing/from-painting-to-sculpting/).
 
 # Core idea
 
@@ -20,6 +20,7 @@ Don't chase the one perfect answer; generate strong options and curate well.
 
 # Related
 
+- [From Painting to Sculpting](./from-painting-to-sculpting.md)
 - [Less, but Better](./less-but-better.md)
 - [Generative AI](./generative-ai.md)
 - [Desirability](./desirability.md)

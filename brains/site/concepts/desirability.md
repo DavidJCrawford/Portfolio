@@ -8,7 +8,7 @@ timestamp: 2026-07-01T00:00:00Z
 
 # Summary
 
-The human lens of the [3 Lenses of Innovation](./the-3-lenses-of-innovation.md): does anyone actually want this, does it meet a real human need, and does it feel right to use? The experience layer — the lens learned over a career leading UX. In an AI world it connects to [curation](./curation.md): when many options are cheap, taste decides which one people will actually want.
+The human lens of the [3 Lenses of Innovation](./the-3-lenses-of-innovation.md): does anyone actually want this, does it meet a real human need, and does it feel right to use? The experience layer — the lens learned over a career leading UX. In an AI world it connects to [curation](./curation.md): when many options are cheap, taste decides which one people will actually want. One corner of a three-way tension: what people want must also be [feasible](./feasibility.md) to build and [viable](./viability.md) to sustain.
 
 # Core idea
 
@@ -17,6 +17,8 @@ Do people actually want it? The lens I know best from years leading UX.
 # Related
 
 - [The 3 Lenses of Innovation](./the-3-lenses-of-innovation.md)
+- [Feasibility](./feasibility.md)
+- [Viability](./viability.md)
 - [Curation](./curation.md)
 - [Helping People Thrive](./helping-people-thrive.md)
 - [Product](./product.md)

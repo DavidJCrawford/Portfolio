@@ -13,7 +13,7 @@ Pioneering environmental scientist, writer and systems thinker (1941–2001); le
 
 # Key idea
 
-Structure drives behaviour, and the biggest leverage in a system is rarely where people push. Her work is the backbone of [systems thinking](../concepts/systems-thinking.md), [leverage points](../concepts/leverage-points.md), and reasoning about [Nth-order effects](../concepts/nth-order-effects.md).
+Structure drives behaviour, and the biggest leverage in a system is rarely where people push. Her work is the backbone of [systems thinking](../concepts/systems-thinking.md), [leverage points](../concepts/leverage-points.md), and reasoning about [Nth-order effects](../concepts/nth-order-effects.md). Her leverage hierarchy is why the site keeps asking *where to intervene*, not just what to fix.
 
 # Related
 

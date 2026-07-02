@@ -8,7 +8,7 @@ timestamp: 2026-07-01T00:00:00Z
 
 # Summary
 
-The condition of the present: relentless, compounding change — accelerated sharply by [generative AI](./generative-ai.md) and [agentic AI](./agentic-ai.md). The backdrop the work responds to; crafting product well is how we help people stay [safe](./safe.md) and [thrive](./helping-people-thrive.md) through it.
+The condition of the present: relentless, compounding change — accelerated sharply by [generative AI](./generative-ai.md) and [agentic AI](./agentic-ai.md). The backdrop the work responds to; crafting product well is how we help people stay [safe](./safe.md) and [thrive](./helping-people-thrive.md) through it — the closing clause of [the through-line](./the-through-line.md).
 
 # Leading through it
 
@@ -25,3 +25,4 @@ The world is beset with change. The work is helping people stay safe and thrive 
 - [Wisdom Work](./wisdom-work.md)
 - [Generative AI](./generative-ai.md)
 - [Agentic AI](./agentic-ai.md)
+- [The Through-Line](./the-through-line.md)

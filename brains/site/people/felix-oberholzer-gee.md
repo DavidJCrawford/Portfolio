@@ -13,7 +13,7 @@ Professor of Business Administration at Harvard Business School; author of *Bett
 
 # Key idea
 
-Strategy gets simpler when you focus on value created — the gap between what customers are willing to pay and what employees and suppliers are willing to sell for. See [Value-Based Strategy](../concepts/value-based-strategy.md).
+Strategy gets simpler when you focus on value created — the gap between what customers are willing to pay and what employees and suppliers are willing to sell for. See [Value-Based Strategy](../concepts/value-based-strategy.md). The value stick keeps [viability](../concepts/viability.md) honest — price is a consequence of value created, not a lever of its own.
 
 # Related
 

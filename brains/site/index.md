@@ -4,7 +4,7 @@ okf_version: "0.1"
 
 # Portfolio — Site Brain
 
-An [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf) (OKF v0.1) bundle — the ideas behind this site, published so people and agents can understand its context. This is the `brains/site/` bundle; concepts are markdown files and relationships are ordinary markdown links. Other subjects live in sibling bundles under `brains/` — for instance, a brain that backs a specific article (see [ai-in-security](../ai-in-security/)). Implementation lives in the project's `spec.md` and `DESIGN.md`.
+An [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf) (OKF v0.1) bundle — the ideas behind this site, published so people and agents can understand its context. This is the `brains/site/` bundle; concepts are markdown files and relationships are ordinary markdown links. Other subjects live in sibling bundles under `brains/` — for instance, a brain that backs a specific article (see [ai-in-security](../ai-in-security/) and [ai-impact](../ai-impact/)). Implementation lives in the project's `spec.md` and `DESIGN.md`.
 
 Start with **[The Through-Line](./concepts/the-through-line.md)** — the single idea everything ladders up to — or **[David J Crawford](./people/david-j-crawford.md)** for who's behind it. This brain is also explorable as an interactive [node graph](./technical/brain-graph.md) at `/brain`.
 
@@ -17,10 +17,10 @@ Start with **[The Through-Line](./concepts/the-through-line.md)** — the single
 ## Concepts
 
 - **[The Through-Line](./concepts/the-through-line.md)** · **[Product](./concepts/product.md)** · **[The 3 Lenses of Innovation](./concepts/the-3-lenses-of-innovation.md)** ([Desirability](./concepts/desirability.md) · [Feasibility](./concepts/feasibility.md) · [Viability](./concepts/viability.md))
-- **Design & craft** — [Design Thinking](./concepts/design-thinking.md) · [Transdisciplinary Design](./concepts/transdisciplinary-design.md) · [Ten Principles of Good Design](./concepts/ten-principles-of-good-design.md) · [Less, but Better](./concepts/less-but-better.md) · [Curation](./concepts/curation.md)
+- **Design & craft** — [Design Thinking](./concepts/design-thinking.md) · [Transdisciplinary Design](./concepts/transdisciplinary-design.md) · [Ten Principles of Good Design](./concepts/ten-principles-of-good-design.md) · [Less, but Better](./concepts/less-but-better.md) · [Curation](./concepts/curation.md) · [From Painting to Sculpting](./concepts/from-painting-to-sculpting.md)
 - **Strategy** — [Good Strategy](./concepts/good-strategy.md) · [Playing to Win](./concepts/playing-to-win.md) · [Value-Based Strategy](./concepts/value-based-strategy.md)
-- **Building with AI** — [Engineering Is Not Construction](./concepts/engineering-is-not-construction.md) · [AI Engineering](./concepts/ai-engineering.md)
-- **Systems** — [Systems Thinking](./concepts/systems-thinking.md) · [Leverage Points](./concepts/leverage-points.md) · [Nth-Order Effects](./concepts/nth-order-effects.md) · [Knowledge as Leverage](./concepts/knowledge-as-leverage.md)
+- **Building with AI** — [Engineering Is Not Construction](./concepts/engineering-is-not-construction.md) · [AI Engineering](./concepts/ai-engineering.md) · [The Discipline Paradox](./concepts/the-discipline-paradox.md) · [Guardrails & Golden Paths](./concepts/guardrails-and-golden-paths.md)
+- **Systems** — [Systems Thinking](./concepts/systems-thinking.md) · [First-Principles Thinking](./concepts/first-principles-thinking.md) · [Leverage Points](./concepts/leverage-points.md) · [Nth-Order Effects](./concepts/nth-order-effects.md) · [Knowledge as Leverage](./concepts/knowledge-as-leverage.md)
 - **AI** — [Generative AI](./concepts/generative-ai.md) · [Agentic AI](./concepts/agentic-ai.md) · [Agents Acting on Behalf of Humans](./concepts/agents-acting-for-humans.md) · [Deterministic vs Probabilistic](./concepts/deterministic-vs-probabilistic.md) · [Wisdom Work](./concepts/wisdom-work.md)
 - **Why** — [Safe](./concepts/safe.md) · [Secure](./concepts/secure.md) · [Security Industry](./concepts/security-industry.md) · [Helping People Thrive](./concepts/helping-people-thrive.md) · [Beset with Change](./concepts/beset-with-change.md)
 
@@ -35,6 +35,7 @@ Start with **[The Through-Line](./concepts/the-through-line.md)** — the single
 - [Publish the Brain Publicly](./decisions/publish-the-brain-publicly.md)
 - [Read the Brain Live](./decisions/read-the-brain-live.md)
 - [Optimise the Site for AI Agents](./decisions/optimise-for-ai-agents.md)
+- [Link with Intent](./decisions/link-with-intent.md)
 
 ## Technical
 

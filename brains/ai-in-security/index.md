@@ -6,7 +6,7 @@ okf_version: "0.1"
 
 An [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf) (OKF v0.1) bundle holding the thinking behind David's writing on putting AI to work in physical security and access control. It is a sibling of the [site brain](../site/index.md) and links into it rather than repeating it — the shared ideas (deterministic vs probabilistic, secure, agentic AI, wisdom work) live there.
 
-**Backs:** [The Right People, at the Right Time](../../src/content/articles/the-right-people-at-the-right-time.mdx)
+**Backs:** [The Right People, at the Right Time](https://davidjcrawford.github.io/Portfolio/writing/the-right-people-at-the-right-time/)
 
 Start with **[The Two-Layer Architecture](./concepts/two-layer-architecture.md)** — the load-bearing idea.
 

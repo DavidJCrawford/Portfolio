@@ -12,7 +12,7 @@ Computer scientist, writer and educator working on machine-learning systems; aut
 
 # Key idea
 
-Building on foundation models is its own discipline, distinct from training models from scratch — and it starts by defining how you'll evaluate the application before you build it. See [AI Engineering](../concepts/ai-engineering.md).
+Building on foundation models is its own discipline, distinct from training models from scratch — and it starts by defining how you'll evaluate the application before you build it. See [AI Engineering](../concepts/ai-engineering.md). That evaluation-first discipline is what this site leans on to make probabilistic systems trustworthy.
 
 # Related
 

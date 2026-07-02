@@ -13,7 +13,7 @@ Strategy adviser, author and former dean of the Rotman School of Management, rep
 
 # Key idea
 
-Strategy is an integrated set of choices, not a plan — and its heart is two linked questions, *where to play* and *how to win*. See [Playing to Win](../concepts/playing-to-win.md).
+Strategy is an integrated set of choices, not a plan — and its heart is two linked questions, *where to play* and *how to win*. See [Playing to Win](../concepts/playing-to-win.md). Strategy-as-choice is the discipline behind this site’s own positioning decisions.
 
 # Related
 

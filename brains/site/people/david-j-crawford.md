@@ -13,7 +13,7 @@ I'm David J Crawford. I've had three careers at depth: roughly a decade as a sof
 
 # How I think
 
-I'm a first-principles thinker — I want to understand *why* before adopting a practice, and I'm sceptical of methods (Agile, Lean, Design Thinking) applied as ritual rather than understood as tools. I lean heavily on [systems thinking](../concepts/systems-thinking.md) and [leverage points](../concepts/leverage-points.md) (Donella Meadows), on [strategy as a kernel](../concepts/good-strategy.md) (Richard Rumelt), and on a conviction that [the quality of the specification is the quality of the engineering](../concepts/engineering-is-not-construction.md). I keep my knowledge externalised in structured, machine-readable form rather than locked in my head — this brain is an instance of that.
+I'm a [first-principles thinker](../concepts/first-principles-thinking.md) — I want to understand *why* before adopting a practice, and I'm sceptical of methods (Agile, Lean, Design Thinking) applied as ritual rather than understood as tools. I lean heavily on [systems thinking](../concepts/systems-thinking.md) and [leverage points](../concepts/leverage-points.md) (Donella Meadows), on [strategy as a kernel](../concepts/good-strategy.md) (Richard Rumelt), and on a conviction that [the quality of the specification is the quality of the engineering](../concepts/engineering-is-not-construction.md). I keep my knowledge externalised in structured, machine-readable form rather than locked in my head — this brain is an instance of that.
 
 # What I do now
 
@@ -26,6 +26,7 @@ To externalise thinking, force clarity, and bridge silos. The interesting questi
 # Related
 
 - [The Through-Line](../concepts/the-through-line.md)
+- [First-Principles Thinking](../concepts/first-principles-thinking.md)
 - [Product](../concepts/product.md)
 - [Systems Thinking](../concepts/systems-thinking.md)
 - [Transdisciplinary Design](../concepts/transdisciplinary-design.md)

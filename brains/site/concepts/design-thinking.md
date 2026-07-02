@@ -29,6 +29,4 @@ A human-centred method for innovation, organised around desirability, feasibilit
 - [David Kelley](../people/david-kelley.md)
 - [The 3 Lenses of Innovation](./the-3-lenses-of-innovation.md)
 - [Transdisciplinary Design](./transdisciplinary-design.md)
-- [Desirability](./desirability.md)
-- [Curation](./curation.md)
 - [Product](./product.md)

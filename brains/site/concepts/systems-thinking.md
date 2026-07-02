@@ -12,7 +12,7 @@ A way of seeing the world as interconnected systems rather than isolated parts (
 
 # Why it matters here
 
-It is the lens for the whole site. AI is a powerful intervention in a complex system; its consequences are its [Nth-order effects](./nth-order-effects.md), and the highest-value question is where the real [leverage points](./leverage-points.md) are — usually not the obvious ones.
+It is the lens for the whole site. AI is a powerful intervention in a complex system; its consequences are its [Nth-order effects](./nth-order-effects.md), and the highest-value question is where the real [leverage points](./leverage-points.md) are — usually not the obvious ones. The article [A Systems-Level Introduction](https://davidjcrawford.github.io/Portfolio/writing/a-systems-level-introduction/) opens the site from exactly this vantage.
 
 # Core idea
 

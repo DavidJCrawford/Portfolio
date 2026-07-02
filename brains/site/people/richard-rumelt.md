@@ -13,7 +13,7 @@ Influential strategy scholar and UCLA professor, often called a strategist's str
 
 # Key idea
 
-A real strategy has a *kernel* — a clear diagnosis, a guiding policy, and coherent action. Most so-called strategies are goals or wish-lists with the hard diagnosis skipped. See [Good Strategy](../concepts/good-strategy.md).
+A real strategy has a *kernel* — a clear diagnosis, a guiding policy, and coherent action. Most so-called strategies are goals or wish-lists with the hard diagnosis skipped. See [Good Strategy](../concepts/good-strategy.md). The kernel is the test applied here before calling anything a strategy: diagnosis first, then coherent action.
 
 # Related
 

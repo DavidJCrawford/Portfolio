@@ -1,0 +1,3 @@
+# Log
+
+- **2026-07-02** — Created the `ai-impact` brain to back the *AI Impact* series ([Blue Ocean Strategy](https://davidjcrawford.github.io/Portfolio/writing/ai-impact-blue-ocean-strategy/), [Moats After the Scarcity Collapse](https://davidjcrawford.github.io/Portfolio/writing/ai-impact-moats-after-the-scarcity/)): [the scarcity collapse](./concepts/scarcity-collapse.md) as the mechanism, [moats after AI](./concepts/moats-after-ai.md) for where defensibility relocates, [Blue Ocean Strategy](./concepts/blue-ocean-strategy.md) revisited, and a reference note for [Kim & Mauborgne](./people/kim-and-mauborgne.md). Second article bundle after `ai-in-security`; links into the [site brain](../site/index.md)'s strategy cluster rather than repeating it.

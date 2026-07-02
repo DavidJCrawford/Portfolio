@@ -12,7 +12,7 @@ Designer and executive chair (former CEO) of IDEO, and author of *Change by Desi
 
 # Key idea
 
-Innovation that integrates the needs of people, the possibilities of technology, and the requirements for business success — the [three lenses](../concepts/the-3-lenses-of-innovation.md).
+Innovation that integrates the needs of people, the possibilities of technology, and the requirements for business success — the [three lenses](../concepts/the-3-lenses-of-innovation.md). His integration test is this site’s working definition of where good product lives: the overlap is the work.
 
 # Related
 

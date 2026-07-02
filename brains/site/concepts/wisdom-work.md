@@ -12,7 +12,7 @@ The shift from *knowledge work* to what some call *wisdom work*. When [agentic A
 
 # Why it matters
 
-It's the optimistic core of the AI shift: handled well, agents free people to do more of the work that requires judgement — which is also the work that helps people [thrive](./helping-people-thrive.md). It's why [curation](./curation.md) and clear [strategy](./good-strategy.md) become more valuable, not less.
+It's the optimistic core of the AI shift: handled well, agents free people to do more of the work that requires judgement — which is also the work that helps people [thrive](./helping-people-thrive.md). It's why [curation](./curation.md) and clear [strategy](./good-strategy.md) become more valuable, not less. It also changes who leads: when agents handle execution, everyone starts working like a leader — briefing clearly, delegating outcomes rather than tasks, and holding a quality bar — so leadership skills stop being management-only skills. Explored in [Future of Work](https://davidjcrawford.github.io/Portfolio/writing/future-of-work/) and the leadership thread of [Lessons on AI Acceleration](https://davidjcrawford.github.io/Portfolio/writing/lessons-on-ai-acceleration/).
 
 # Core idea
 

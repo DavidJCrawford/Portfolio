@@ -21,7 +21,7 @@ Because the order matters, the unglamorous priority is the workflow engine first
 
 # Core idea
 
-Guarantees underneath, intelligence on top — and build the guarantees first.
+Guarantees underneath, intelligence on top — and build the guarantees first. Explored at length in [The Right People, at the Right Time](https://davidjcrawford.github.io/Portfolio/writing/the-right-people-at-the-right-time/).
 
 # Related
 
