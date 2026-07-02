@@ -633,7 +633,9 @@ const byType = order
     // the node under the finger highlights and shows its name (the staged blob +
     // label via activate), and releasing over that node opens the drawer.
     // Guarded per-event by pointerType so hybrid devices keep both modes.
-    let touchId = -1, touchHover = -1;
+    // NOTE: match the finger by pointerType + isPrimary, NOT pointerId — iOS Safari
+    // does not keep pointerId stable across down/move/up for the same touch.
+    let touchOn = false, touchHover = -1;
     const TOUCH_HIT = 32; // generous screen-px radius — fingers are blunter than cursors
     function touchNodeAt(cx: number, cy: number): number {
       const m = toModel(cx, cy);
@@ -665,20 +667,21 @@ const byType = order
         showComet();
       }
     }
+    const isTouch = (e: PointerEvent) => e.pointerType === 'touch' && e.isPrimary; // first finger only
     svg.addEventListener('pointerdown', (e) => {
-      if (e.pointerType !== 'touch' || touchId >= 0) return; // first finger only
-      touchId = e.pointerId;
+      if (!isTouch(e)) return;
+      touchOn = true;
       const m = toModel(e.clientX, e.clientY);
       pmx = m.x; pmy = m.y; pointerOn = true;
       touchHoverSet(touchNodeAt(e.clientX, e.clientY));
     });
     svg.addEventListener('pointermove', (e) => {
-      if (touchId < 0 || e.pointerId !== touchId) return;
+      if (!touchOn || !isTouch(e)) return;
       touchHoverSet(touchNodeAt(e.clientX, e.clientY));
     });
     const touchEnd = (e: PointerEvent) => {
-      if (touchId < 0 || e.pointerId !== touchId) return;
-      touchId = -1;
+      if (!touchOn || !isTouch(e)) return;
+      touchOn = false;
       const sel = e.type === 'pointerup' ? touchHover : -1; // release over a node selects it
       if (sel >= 0) openDrawer(sel); // before the reset, so drawerNode guards deactivate
       touchHoverSet(-1);

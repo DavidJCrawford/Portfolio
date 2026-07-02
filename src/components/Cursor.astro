@@ -105,11 +105,12 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
 
     // Touch mode: while a finger drags on the opt-in surface, it drives the comet.
     // On touch-only devices the frame loop runs only for the drag's duration.
+    // NOTE: match the finger by pointerType + isPrimary, NOT pointerId — iOS Safari
+    // does not keep pointerId stable across down/move/up for the same touch.
     if (touchHost) {
-      let touchId = -1;
+      const isTouch = (e) => e.pointerType === 'touch' && e.isPrimary; // first finger only
       touchHost.addEventListener('pointerdown', (e) => {
-        if (e.pointerType !== 'touch' || touchId >= 0) return; // first finger only
-        touchId = e.pointerId;
+        if (!isTouch(e)) return;
         mx = e.clientX; my = e.clientY; lastMove = performance.now();
         for (const p of pts) { p.x = mx; p.y = my; } // start at the finger, not across the screen
         measure();
@@ -119,12 +120,12 @@ const N = 7; // chain length — lead is biggest, tail tapers (the comet)
         touching = true;
       }, { passive: true });
       addEventListener('pointermove', (e) => {
-        if (touchId < 0 || e.pointerId !== touchId) return;
+        if (!touching || !isTouch(e)) return;
         mx = e.clientX; my = e.clientY; lastMove = performance.now();
       }, { passive: true });
       const end = (e) => {
-        if (touchId < 0 || e.pointerId !== touchId) return;
-        touchId = -1; touching = false;
+        if (!touching || !isTouch(e)) return;
+        touching = false;
         root.classList.remove('touching');
         if (!fine) running = false; // stop the loop on touch-only devices
       };
