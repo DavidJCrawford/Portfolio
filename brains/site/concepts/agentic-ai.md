@@ -17,6 +17,7 @@ From generating to doing. Agents change what a small team can feasibly build and
 # Related
 
 - [Generative AI](./generative-ai.md)
+- [Agents Acting on Behalf of Humans](./agents-acting-for-humans.md)
 - [Deterministic vs Probabilistic](./deterministic-vs-probabilistic.md)
 - [Engineering Is Not Construction](./engineering-is-not-construction.md)
 - [Knowledge as Leverage](./knowledge-as-leverage.md)

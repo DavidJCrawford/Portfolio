@@ -19,13 +19,52 @@ interface Props {
   title: string;
   description?: string;
   canonicalUrl?: string;
+  ogType?: string;
+  schema?: Record<string, unknown>[]; // page-specific JSON-LD nodes, merged into the @graph
 }
-const { title, description, canonicalUrl } = Astro.props;
+const { title, description, canonicalUrl, ogType = 'website', schema = [] } = Astro.props;
 const fullTitle = title === 'David J Crawford' ? title : `${title} — David J Crawford`;
 const desc =
   description ??
   'David J Crawford writes about crafting product that keeps people safe and helps them thrive in the ever-changing world of generative and agentic AI.';
 const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
+
+// Structured data (JSON-LD) so agents can extract accurate metadata. A sitewide
+// Person + WebSite, plus any page-specific nodes (e.g. an Article on writing pages).
+const home = new URL(import.meta.env.BASE_URL, Astro.site).href;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${home}#person`,
+      name: 'David J Crawford',
+      url: home,
+      jobTitle: 'AI Product Manager',
+      description:
+        'Product person and systems thinker — roughly a decade each as a software engineer and a UX/design leader, now in AI product — writing about how product gets crafted in the age of generative and agentic AI.',
+      knowsAbout: [
+        'Product management',
+        'Transdisciplinary design',
+        'Design thinking',
+        'Generative AI',
+        'Agentic AI',
+        'Systems thinking',
+        'Physical security & access control',
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${home}#website`,
+      url: home,
+      name: 'David J Crawford',
+      description: desc,
+      inLanguage: 'en',
+      publisher: { '@id': `${home}#person` },
+    },
+    ...schema,
+  ],
+};
 ---
 
 <!doctype html>
@@ -41,10 +80,12 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
     <meta name="color-scheme" content="light" />
     <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <link rel="alternate" type="text/plain" href={withBase('llms.txt')} title="llms.txt (map for AI agents)" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

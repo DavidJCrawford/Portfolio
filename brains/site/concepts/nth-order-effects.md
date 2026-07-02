@@ -25,4 +25,5 @@ Ask not only “what does this do?” but “and then what?” — repeatedly.
 - [Leverage Points](./leverage-points.md)
 - [Beset with Change](./beset-with-change.md)
 - [Wisdom Work](./wisdom-work.md)
+- [Agents Acting on Behalf of Humans](./agents-acting-for-humans.md)
 - [The Through-Line](./the-through-line.md)

@@ -21,7 +21,7 @@ Start with **[The Through-Line](./concepts/the-through-line.md)** — the single
 - **Strategy** — [Good Strategy](./concepts/good-strategy.md) · [Playing to Win](./concepts/playing-to-win.md) · [Value-Based Strategy](./concepts/value-based-strategy.md)
 - **Building with AI** — [Engineering Is Not Construction](./concepts/engineering-is-not-construction.md) · [AI Engineering](./concepts/ai-engineering.md)
 - **Systems** — [Systems Thinking](./concepts/systems-thinking.md) · [Leverage Points](./concepts/leverage-points.md) · [Nth-Order Effects](./concepts/nth-order-effects.md) · [Knowledge as Leverage](./concepts/knowledge-as-leverage.md)
-- **AI** — [Generative AI](./concepts/generative-ai.md) · [Agentic AI](./concepts/agentic-ai.md) · [Deterministic vs Probabilistic](./concepts/deterministic-vs-probabilistic.md) · [Wisdom Work](./concepts/wisdom-work.md)
+- **AI** — [Generative AI](./concepts/generative-ai.md) · [Agentic AI](./concepts/agentic-ai.md) · [Agents Acting on Behalf of Humans](./concepts/agents-acting-for-humans.md) · [Deterministic vs Probabilistic](./concepts/deterministic-vs-probabilistic.md) · [Wisdom Work](./concepts/wisdom-work.md)
 - **Why** — [Safe](./concepts/safe.md) · [Secure](./concepts/secure.md) · [Security Industry](./concepts/security-industry.md) · [Helping People Thrive](./concepts/helping-people-thrive.md) · [Beset with Change](./concepts/beset-with-change.md)
 
 ## Situations
@@ -34,6 +34,7 @@ Start with **[The Through-Line](./concepts/the-through-line.md)** — the single
 - [Position the Landing Around Crafting Product](./decisions/position-the-landing-around-crafting-product.md)
 - [Publish the Brain Publicly](./decisions/publish-the-brain-publicly.md)
 - [Read the Brain Live](./decisions/read-the-brain-live.md)
+- [Optimise the Site for AI Agents](./decisions/optimise-for-ai-agents.md)
 
 ## Technical
 
@@ -43,5 +44,6 @@ How the site is actually built — start with **[Architecture & Stack](./technic
 - **Content** — [Content Model & Ordering](./technical/content-model.md)
 - **Interaction** — [Liquid Comet Cursor](./technical/liquid-cursor.md) · [Glitch Wordmark](./technical/glitch-wordmark.md) · [Progressive Enhancement & Accessibility](./technical/progressive-enhancement.md)
 - **Delivery** — [Deployment & Base Path](./technical/deployment.md) · [The Brain (OKF Bundle)](./technical/the-okf-brain.md) · [The Brain Graph](./technical/brain-graph.md)
+- **Agents** — [Agent Legibility](./technical/agent-legibility.md)
 
 Change history: [log.md](./log.md).

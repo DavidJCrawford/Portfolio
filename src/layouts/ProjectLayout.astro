@@ -14,9 +14,26 @@ const placard = [
   { label: 'Type', value: role },
   { label: 'Stack', value: stack.join(' · ') },
 ];
+
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const home = new URL(import.meta.env.BASE_URL, Astro.site).href;
+const schema = [
+  {
+    '@type': 'CreativeWork',
+    '@id': `${url}#project`,
+    name: title,
+    description: dek,
+    url,
+    dateCreated: String(year),
+    keywords: stack,
+    author: { '@id': `${home}#person` },
+    isPartOf: { '@id': `${home}#website` },
+    inLanguage: 'en',
+  },
+];
 ---
 
-<BaseLayout title={title} description={dek}>
+<BaseLayout title={title} description={dek} schema={schema}>
   <article class="project">
     <div class="shell">
       <header class="masthead measure">

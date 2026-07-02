@@ -13,9 +13,28 @@ const human = new Date(date).toLocaleDateString('en-NZ', {
   month: 'long',
   day: 'numeric',
 });
+
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const home = new URL(import.meta.env.BASE_URL, Astro.site).href;
+const schema = [
+  {
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    headline: title,
+    description: dek,
+    datePublished: iso,
+    dateModified: iso,
+    url,
+    mainEntityOfPage: url,
+    author: { '@id': `${home}#person` },
+    publisher: { '@id': `${home}#person` },
+    isPartOf: { '@id': `${home}#website` },
+    inLanguage: 'en',
+  },
+];
 ---
 
-<BaseLayout title={title} description={dek} canonicalUrl={canonicalUrl}>
+<BaseLayout title={title} description={dek} canonicalUrl={canonicalUrl} ogType="article" schema={schema}>
   <article class="article">
     <div class="shell">
       <header class="masthead measure">

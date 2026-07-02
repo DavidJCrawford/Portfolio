@@ -1,0 +1,39 @@
+# David J Crawford — portfolio
+# AI assistants and agents are welcome to read, quote, and cite this site.
+# A curated map for LLMs lives at /llms.txt (and /llms-full.txt for the full text).
+
+User-agent: *
+Allow: /
+
+# Explicitly welcoming the major AI crawlers / assistant fetchers.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://davidjcrawford.github.io/Portfolio/sitemap.xml
