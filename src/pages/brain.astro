@@ -387,6 +387,7 @@ const byType = order
 
     // --- render --------------------------------------------------------------
     let active = -1, t = 0, p = 0, blobNode = -1, dimmed = false;
+    let labelAbove = false; // touch shows the name/type above the node (clear of the finger)
     let focusNear: Set<number> | null = null;
     let drawerNode = -1; // the node whose drawer is open — it stays activated while open
     let pending = -1; // when switching nodes, the next node to open once the current has closed
@@ -476,7 +477,10 @@ const byType = order
           const r = svg.getBoundingClientRect();
           const sx = gx(n) * scale + W / 2 + tx, sy = gy(n) * scale + H / 2 + ty;
           label.style.left = r.left + sx + 'px';
-          label.style.top = r.top + sy + 13 * scale + 6 + 'px';
+          // Touch: the finger sits on the node, so the label goes ABOVE it (anchored
+          // by its bottom edge); mouse keeps it below, clear of the pointer's blob.
+          label.style.top = r.top + sy + (labelAbove ? -(13 * scale + 8) : 13 * scale + 6) + 'px';
+          label.style.transform = labelAbove ? 'translate(-50%, -100%)' : 'translate(-50%, 0)';
           label.style.opacity = mainAmt.toFixed(3);
         }
       }
@@ -561,6 +565,7 @@ const byType = order
       g.addEventListener('pointerenter', (e) => {
         if (e.pointerType === 'touch') return;
         if (drawerNode >= 0) return; // drawer owns the active state while open
+        labelAbove = false; // mouse: label below the node
         clearTimeout(hoverTimer);
         clearTimeout(cometTimer);
         hovered = i; // pin so the node doesn't drift out from under the pointer
@@ -657,6 +662,7 @@ const byType = order
       touchHover = i;
       if (i >= 0) {
         hovered = i; // pin it, as desktop hover does
+        labelAbove = true; // touch: label above the node, clear of the finger
         nodes[i].el!.classList.add('is-hover');
         clearTimeout(cometTimer);
         cometTimer = window.setTimeout(hideComet, 250);
